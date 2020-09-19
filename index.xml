@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>trevor mckay</title>
+    <title>Welcome to my site on trevor mckay</title>
     
     
     
     <link>/</link>
-    <description>Recent content on trevor mckay</description>
+    <description>Recent content in Welcome to my site on trevor mckay</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>© 2020 Trevor McKay, powered by Hugo, theme created by panr</copyright>
+    <copyright>© 2020 Trevor McKay</copyright>
     <lastBuildDate>Fri, 18 Sep 2020 16:22:55 -0700</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
@@ -30,6 +30,27 @@
         
         
           Anyone using Linux as their daily driver knows how devastating it can be to lose all your personal and configuration files to hardware failure. As such, most users have some way to keep their files safe. Many choose to use some sort of dotfile management system. This is is a great choice as it allows for version control and branches for multiple machines. However, dotfiles are not the only thing you want to preserve.
+          
+        
+        </description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/about/</guid>
+      <description>
+        
+          
+          
+          
+        
+        
+        
+          Hello, my name is Trevor. I am a student pursuing a degree in Computer Engineering with a minor in German Language and Culture. I like hardware design and FPGAs, RISC-V, embedded, and Linux. I also like the outdoors, cycling and volleyball!
+I am currently looking for work! Here is some of my relevent experience and skills, at a glance. Of course, you can always just email me if you&amp;rsquo;d rather have my resume.
           
         
         </description>
