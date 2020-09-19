@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>trevor mckay</title>
+    
+    
+    
+    <link>/</link>
+    <description>Recent content on trevor mckay</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>© 2020 Trevor McKay, powered by Hugo, theme created by panr</copyright>
+    <lastBuildDate>Fri, 18 Sep 2020 16:22:55 -0700</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Automated backups with _rsync_, _anacron_ and the cloud</title>
+      <link>/posts/backups/</link>
+      <pubDate>Fri, 18 Sep 2020 16:22:55 -0700</pubDate>
+      
+      <guid>/posts/backups/</guid>
+      <description>
+        
+          
+          
+          
+        
+        
+        
+          Anyone using Linux as their daily driver knows how devastating it can be to lose all your personal and configuration files to hardware failure. As such, most users have some way to keep their files safe. Many choose to use some sort of dotfile management system. This is is a great choice as it allows for version control and branches for multiple machines. However, dotfiles are not the only thing you want to preserve.
+          
+        
+        </description>
+    </item>
+    
+  </channel>
+</rss>
