@@ -16,11 +16,11 @@
     
     
     <item>
-      <title>Automated backups with _rsync_, _anacron_ and the cloud</title>
-      <link>/posts/backups/</link>
+      <title>Automated backups with _rsync_, _anacron_, and the cloud</title>
+      <link>/posts/rsync-anacron-backups/</link>
       <pubDate>Fri, 18 Sep 2020 16:22:55 -0700</pubDate>
       
-      <guid>/posts/backups/</guid>
+      <guid>/posts/rsync-anacron-backups/</guid>
       <description>
         
           

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+      <title>
+        Automated backups with _rsync_, _anacron_, and the cloud ::
+        trevor mckay
+      </title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta
+  name="description"
+  content="Anyone using Linux as their daily driver knows how devastating it can be to lose all your personal and configuration files to hardware failure. As such, most users have some way to keep their files safe. Many choose to use some sort of dotfile management system. This is is a great choice as it allows for version control and branches for multiple machines. However, dotfiles are not the only thing you want to preserve."
+/>
+<meta
+  name="keywords"
+  content="blog, posts, portfolio, development, coding"
+/>
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/rsync-anacron-backups/" />
+
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css" />
+
+<link rel="stylesheet" href="/style.css" />
+
+
+<link
+  rel="apple-touch-icon-precomposed"
+  sizes="144x144"
+  href="/img/apple-touch-icon-144-precomposed.png"
+/>
+<link rel="shortcut icon" href="/img/favicon.png" />
+
+
+<link href="/assets/fonts/Inter-Italic.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+<link href="/assets/fonts/Inter-Regular.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+<link href="/assets/fonts/Inter-Medium.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+<link href="/assets/fonts/Inter-MediumItalic.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+<link href="/assets/fonts/Inter-Bold.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+<link href="/assets/fonts/Inter-BoldItalic.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Automated backups with _rsync_, _anacron_, and the cloud"/>
+<meta name="twitter:description" content="Anyone using Linux as their daily driver knows how devastating it can be to lose all your personal and configuration files to hardware failure. As such, most users have some way to keep their files safe. Many choose to use some sort of dotfile management system. This is is a great choice as it allows for version control and branches for multiple machines. However, dotfiles are not the only thing you want to preserve."/>
+
+
+
+<meta property="og:title" content="Automated backups with _rsync_, _anacron_, and the cloud" />
+<meta property="og:description" content="Anyone using Linux as their daily driver knows how devastating it can be to lose all your personal and configuration files to hardware failure. As such, most users have some way to keep their files safe. Many choose to use some sort of dotfile management system. This is is a great choice as it allows for version control and branches for multiple machines. However, dotfiles are not the only thing you want to preserve." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/posts/rsync-anacron-backups/" />
+<meta property="article:published_time" content="2020-09-18T16:22:55-07:00" />
+<meta property="article:modified_time" content="2020-09-18T16:22:55-07:00" /><meta property="og:site_name" content="trevor mckay" />
+
+
+
+
+
+
+  </head>
+  <body class="dark-theme">
+    <div class="container">
+      <header class="header">
+  <span class="header__inner">
+    <a
+  href="/"
+  class="logo"
+  style="text-decoration: none;"
+>
+  
+    <span class="logo__mark"><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44">
+  <path fill="none" d="M15 8l14.729 14.382L15 35.367" />
+</svg>
+</span>
+    <span class="logo__text"
+      >/home/trevor_mckay </span
+    >
+    <span class="logo__cursor"></span>
+  
+</a>
+
+    <span class="header__right">
+      
+        <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/posts">Posts</a></li>
+        
+      
+      
+      
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/posts">Posts</a></li>
+      
+    
+  </ul>
+</nav>
+
+        <span class="menu-trigger">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M0 0h24v24H0z" fill="none" />
+            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+          </svg>
+        </span>
+      
+      <span class="theme-toggle">
+        <svg
+  class="theme-toggler"
+  width="24"
+  height="24"
+  viewBox="0 0 48 48"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path
+    d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
+  3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7
+  13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"
+  />
+</svg>
+
+      </span>
+    </span>
+  </span>
+</header>
+
+
+      <div class="content">
+        
+  
+  
+
+  <div class="post">
+    <h1 class="post-title">Automated backups with <em>rsync</em>, <em>anacron</em>, and the cloud</h1>
+    <div class="post-meta">
+      
+        <span class="post-date">
+          2020-09-18
+        </span>
+
+        
+          
+        
+      
+
+      
+
+
+      
+    </div>
+
+    
+
+    
+
+    <div class="post-content">
+      
+      <p>Anyone using Linux as their daily driver knows how devastating it can be to lose all your personal
+and configuration files to hardware failure. As such, most users have some way to keep their files
+safe. Many choose to use some sort of dotfile management system. This is is a great choice as it
+allows for version control and branches for multiple machines. However, dotfiles are not the only
+thing you want to preserve. Furthermore, when it comes to backups, more redundancy is never a bad
+thing.</p>
+<p>When I was looking for a way to keep my files safe, I had a few criteria to find my solution. I
+wanted my backups to be:</p>
+<ul>
+<li><strong>Automatic</strong>: laziness or neglect should not stop my backups from occurring</li>
+<li><strong>Frequent</strong>: I don&rsquo;t want to be screwed because my PC failed the day before a monthly backup</li>
+<li><strong>Efficient</strong>: if backups are frequent, I don&rsquo;t want to frequently be dedicating my
+resources to them</li>
+<li><strong>Distributed</strong>: in other words, keep them in the cloud</li>
+</ul>
+<p>I am also the type of person who tends to ignore existing solutions, for worse or for better. Why
+spend half an hour reading documentation when I could spend three hours writing a script while
+generating content for a blog post at the same time?</p>
+<h1 id="my-solution">My solution</h1>
+<p>Anyway, I went through a few failed attempts and eventually settled on the following solution: <code>rsync</code> to do
+the synchronization of the target file systems and their destinations, <code>cronie</code>/<code>anacron</code> to
+schedule and automate, and Dropbox for cloud storage (this can still be done with <code>rclone</code> and
+another cloud service, e.g. Google Drive or Onedrive). Of course, you will need these programs if
+you do not have them already.</p>
+<h1 id="getting-familiar-with-_rsync_">Getting familiar with <em>rsync</em></h1>
+<p>Let&rsquo;s first create a script&ndash;well, for now it&rsquo;s basically just one command&ndash;that can simply
+copy one folder to another. We could use <code>cp</code>, but lets use <code>rsync</code> for <em>speed</em> (among other things).
+Here it is:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>
+SOURCE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span>
+DEST<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$2<span style="color:#e6db74">&#34;</span>
+
+echo <span style="color:#e6db74">&#34;Synchronizing </span>$SOURCE<span style="color:#e6db74"> to </span>$DEST<span style="color:#e6db74">...&#34;</span>
+rsync -a --delete $SOURCE $DEST
+</code></pre></div><p>This is arguably the most important command of the backup script we are
+working up to, so let&rsquo;s take a moment to digest it. The <code>-a</code> (<code>--archive</code>) flag is to preserve
+pretty much everything. <code>--delete</code> is whats going
+to keep your backup from infinitely inflating. I said we were &ldquo;copying&rdquo; files earlier, but what
+we&rsquo;re really doing is &ldquo;synchronizing&rdquo; them. This will make sure if a file is deleted in the
+original, it will be later deleted in the backup. Let&rsquo;s not forget the source and target
+directories. One lesson I had to learn the hard way, is that <code>rsync</code> is very picky about these
+arguments. For example <code>rsync documents backups</code> will put a copy of <code>documents</code> in <code>backups</code> so the
+resulting directory structure is <code>backups/documents</code>. <code>rsync documents/ backups</code> does something
+slightly different. It copies the <em>contents</em> of <code>documents</code> to <code>backups</code>. So, if <code>documents</code>
+contains a folder <code>school</code>, the resulting directory structure would be <code>backups/school</code>. This is
+something to be mindful of as we expand our script.</p>
+<h1 id="backing-up-more-than-one-directory">Backing up more than one directory</h1>
+<p>Wouldn&rsquo;t it be nice if we could back up a bunch of directories at once? I
+agree. We can put our sources and destinations in an array like so:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># sources for backups</span>
+declare -a SOURCES
+SOURCES<span style="color:#f92672">[</span>0<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/home&#34;</span>
+SOURCES<span style="color:#f92672">[</span>1<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/etc&#34;</span>
+SOURCES<span style="color:#f92672">[</span>2<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/var/log&#34;</span>
+
+<span style="color:#75715e"># destinations for backup</span>
+declare -a DESTINATIONS
+DESTINATIONS<span style="color:#f92672">[</span>0<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/mnt/hdd1/backups/daily&#34;</span>
+DESTINATIONS<span style="color:#f92672">[</span>1<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/mnt/hdd0/backups/daily&#34;</span>
+
+<span style="color:#66d9ef">for</span> CURR_SOURCE in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SOURCES[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
+    <span style="color:#66d9ef">for</span> CURR_DEST in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DESTINATIONS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
+        rsync -a --quiet --delete $CURR_SOURCE $CURR_DEST
+    <span style="color:#66d9ef">done</span>
+<span style="color:#66d9ef">done</span>
+</code></pre></div><p>Now, we have a script that will take each source and back it up to each destination. Ideally, your
+destinations are all on different drives. That&rsquo;s +1 point in the distributed criterion. Furthermore,
+if your destinations are connected via SSH, you can use <code>rsync</code> like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">rsync -a --quiet --delete --rsh<span style="color:#f92672">=</span>ssh $CURR_SOURCE $CURR_DEST
+</code></pre></div><h1 id="adding-some-nice-features">Adding some nice features</h1>
+<p>This is a good start, but we are still missing some QoL features. Some that came to mind when
+writing this were notifications, backup rotation, and checking that destinations exist.</p>
+<p>Beginning with device checking, I went for the &ldquo;low-tech but definitely works&rdquo; approach. You can
+simply declare an array of all the mount locations the script will be writing to and check them:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># these disks will be checked on run</span>
+declare -a DISKS
+DISKS<span style="color:#f92672">[</span>0<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/mnt/hdd0&#34;</span>
+DISKS<span style="color:#f92672">[</span>1<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/mnt/hdd1&#34;</span>
+
+<span style="color:#66d9ef">for</span> CURR_DISK in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DISKS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>mount | grep $CURR_DISK<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        echo <span style="color:#e6db74">&#34;</span>$CURR_DISK<span style="color:#e6db74"> found&#34;</span>
+    <span style="color:#66d9ef">else</span>
+        echo <span style="color:#e6db74">&#34;</span>$CURR_DISK<span style="color:#e6db74"> not found, aborting&#34;</span>
+        exit
+    <span style="color:#66d9ef">fi</span>
+<span style="color:#66d9ef">done</span>
+</code></pre></div><p>As for notifications, <code>notify-send</code> will work just fine as long as you have a notification server
+set up (if you don&rsquo;t know what that is, don&rsquo;t worry, you probably have one). I just have my script
+issue a notification when it runs and when it finishes. It can be useful to keep track of that
+especially when we start automating it. It is worth noting, however, that running <code>notify-send</code> as
+root will have some unintended consequences. If you are backing up anything other than your own home
+directory, this will certainly affect you. You can use this function to work around that issue
+(credit goes to
+<a href="https://stackoverflow.com/questions/28195805/running-notify-send-as-root">Fabio A. on StackOverflow</a>
+for that):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#66d9ef">function</span> notify-send<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    local display<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;:</span><span style="color:#66d9ef">$(</span>ls /tmp/.X11-unix/* | sed <span style="color:#e6db74">&#39;s#/tmp/.X11-unix/X##&#39;</span> | head -n 1<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+    local user<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>who | grep <span style="color:#e6db74">&#39;(&#39;</span>$display<span style="color:#e6db74">&#39;)&#39;</span> | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> | head -n 1<span style="color:#66d9ef">)</span>
+    local uid<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>id -u $user<span style="color:#66d9ef">)</span>
+    sudo -u $user DISPLAY<span style="color:#f92672">=</span>$display DBUS_SESSION_BUS_ADDRESS<span style="color:#f92672">=</span>unix:path<span style="color:#f92672">=</span>/run/user/$uid/bus notify-send <span style="color:#e6db74">&#34;</span>$@<span style="color:#e6db74">&#34;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>One last feature to add is backup rotation. Like I said earlier, redundancy is never bad. So it
+can&rsquo;t hurt to keep more if you can spare the disk space. In my case, I opted for one level of
+redundancy, but the logic is simple to adapt to more than one level. Essentially, before backing up
+the source directory to the target, the target is copied to a <code>.old</code> directory.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#66d9ef">for</span> CURR_DEST in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DESTINATIONS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
+    rsync -a --quiet --delete $CURR_DEST/* $CURR_DEST.old
+<span style="color:#66d9ef">done</span>
+</code></pre></div><h1 id="bringing-it-all-together">Bringing it all together</h1>
+<p>Let&rsquo;s take these concepts and make them into a single useful script.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">function</span> notify-send<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    local display<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;:</span><span style="color:#66d9ef">$(</span>ls /tmp/.X11-unix/* | sed <span style="color:#e6db74">&#39;s#/tmp/.X11-unix/X##&#39;</span> | head -n 1<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+    local user<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>who | grep <span style="color:#e6db74">&#39;(&#39;</span>$display<span style="color:#e6db74">&#39;)&#39;</span> | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> | head -n 1<span style="color:#66d9ef">)</span>
+    local uid<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>id -u $user<span style="color:#66d9ef">)</span>
+    sudo -u $user DISPLAY<span style="color:#f92672">=</span>$display DBUS_SESSION_BUS_ADDRESS<span style="color:#f92672">=</span>unix:path<span style="color:#f92672">=</span>/run/user/$uid/bus notify-send <span style="color:#e6db74">&#34;</span>$@<span style="color:#e6db74">&#34;</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e"># sources for backups</span>
+declare -a TARGETS
+TARGETS<span style="color:#f92672">[</span>0<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/home&#34;</span>
+TARGETS<span style="color:#f92672">[</span>1<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/etc&#34;</span>
+TARGETS<span style="color:#f92672">[</span>2<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/var/log&#34;</span>
+
+<span style="color:#75715e"># destinations for backup</span>
+<span style="color:#75715e"># folders will contain ALL targets after backup</span>
+declare -a DESTINATIONS
+DESTINATIONS<span style="color:#f92672">[</span>0<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/mnt/hdd1/backups/daily&#34;</span>
+DESTINATIONS<span style="color:#f92672">[</span>1<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/mnt/hdd0/backups/daily&#34;</span>
+
+<span style="color:#75715e"># these disks will be checked on run</span>
+declare -a DISKS
+DISKS<span style="color:#f92672">[</span>0<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/mnt/hdd0&#34;</span>
+DISKS<span style="color:#f92672">[</span>1<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/mnt/hdd1&#34;</span>
+
+echo <span style="color:#e6db74">&#34;Time of backup: </span><span style="color:#66d9ef">$(</span>date<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+notify-send --urgency<span style="color:#f92672">=</span>critical <span style="color:#e6db74">&#34;Starting backup&#34;</span>
+
+echo <span style="color:#e6db74">&#34;Checking disks...&#34;</span>
+<span style="color:#66d9ef">for</span> CURR_DISK in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DISKS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>mount | grep $CURR_DISK<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        echo <span style="color:#e6db74">&#34;</span>$CURR_DISK<span style="color:#e6db74"> is not mounted, aborting&#34;</span>
+        exit
+    <span style="color:#66d9ef">fi</span>
+<span style="color:#66d9ef">done</span>
+
+echo <span style="color:#e6db74">&#34;Rotating backups...&#34;</span>
+<span style="color:#66d9ef">for</span> CURR_DEST in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DESTINATIONS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -d $CURR_DEST <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        rsync -a --quiet --delete $CURR_DEST/* $CURR_DEST.old &gt; /dev/null &amp;
+    <span style="color:#66d9ef">fi</span>
+<span style="color:#66d9ef">done</span>
+wait
+
+echo <span style="color:#e6db74">&#34;Synchronizing sources to destinations...&#34;</span>
+<span style="color:#66d9ef">for</span> CURR_SOURCE in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>TARGETS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
+    <span style="color:#66d9ef">for</span> CURR_DEST in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DESTINATIONS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
+        mkdir -p $CURR_DEST/$CURR_SOURCE
+        rsync -a --quiet --delete $CURR_SOURCE $CURR_DEST &gt; /dev/null &amp;
+    <span style="color:#66d9ef">done</span>
+<span style="color:#66d9ef">done</span>
+wait
+
+echo <span style="color:#e6db74">&#34;Backup complete!&#34;</span>
+notify-send --urgency<span style="color:#f92672">=</span>normal <span style="color:#e6db74">&#34;Backup complete&#34;</span>
+</code></pre></div><p>If you look closely, you&rsquo;ll see that the final script makes modifications to most the code we&rsquo;ve
+written so far. Most of it is just small fixes to make everything work together and background processes to
+speed things up. Still, the central idea remains the same: take an array of sources and copy them to
+an array of destinations. Make sure to modify the sources and destinations to your liking before
+running it. Also, <strong>do not use user specific environment variables</strong>! If you automate this later,
+<code>anacron</code> will be running your script as root.</p>
+<p>Run the script and with any luck you will see something like this:</p>
+<pre><code>Time of backup: Fri Sep 18 07:12:22 PM PDT 2020
+Checking disks...
+Rotating backups...
+Synchronizing sources to destinations...
+Backup complete!
+</code></pre><h1 id="i-am-lazy-sane-and-want-to-automate-this">I am lazy (sane) and want to automate this</h1>
+<p>This is something, but it would be a lot more convenient if this happened automatically, say, once a
+day. Thankfully, this can be done pretty simply with <code>cronie</code>/<code>anacron</code>. We want to set up a job
+that runs this script once a day. We could use <code>cron</code> to do this every morning at 10:00 by adding
+the following to our crontab:</p>
+<pre><code class="language-cron" data-lang="cron">0 10 * * * /path/to/backup.sh
+</code></pre><p>But, what if you wake up every day at 10:01 for a week, and the script never runs? Tough luck, I
+guess&ndash;unless you use an asynchronous job. <code>cronie</code> comes with this capability built in. Simply
+place a link to the script in <code>/etc/cron.daily</code> and it will run every day. However, make sure your
+link doesn&rsquo;t end it <code>.sh</code>. For some reason, <code>run-parts</code> (the tool that <code>cronie</code> uses to run all the
+executables in a directory) doesn&rsquo;t like that. You should also make sure that there is a cron job to
+check for asynchronous jobs. You should see something like this in <code>/etc/crontab</code>. If not, add it.</p>
+<pre><code>17 *    * * *   root    cd / &amp;&amp; run-parts --report /etc/cron.hourly
+25 6    * * *   root    test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.daily )
+47 6    * * 7   root    test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.weekly )
+52 6    1 * *   root    test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.monthly )
+</code></pre><p>And with that, we have fully automated local backups that will run daily, usually within half an hour
+of logging in.</p>
+<h1 id="backing-up-to-the-cloud">Backing up to the cloud</h1>
+<p>Think to yourself: <em>if my computer were to spontaneously combust, would my backups be safe?</em> If the
+answer is no, you should probably be backing up to the cloud.</p>
+<p>I use Dropbox, and if you do too, doing this is actually pretty simple. Simply copy your backups to
+your Dropbox folder every week or so. Of course, we are going to automate this. Thankfully, this is
+much simpler than our other script. Here is the script I use to take my daily backup, compress it,
+and copy it to my Dropbox.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>
+WORKING_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/mnt/hdd0/&#34;</span>
+SOURCE_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;backups/daily&#34;</span>
+DESTINATION_FILE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/mnt/hdd0/Dropbox/backups/backup.tar.gz&#34;</span>
+
+cd $WORKING_DIR
+tar cf - $SOURCE_DIR | pigz &gt; $DESTINATION_FILE
+</code></pre></div><p>You can set this up as a asynchronous cron job, just like the local backup. Make a link to that
+script in <code>/etc/cron.weekly</code> and you&rsquo;re good to go.</p>
+<p>If you are not using Dropbox, this is a little trickier to do. However, it is possible. <code>rclone</code> is
+a utility that supports Onedrive, Google Drive, and more. It&rsquo;s syntax is very similar to <code>rsync</code>&rsquo;s.
+I&rsquo;m sure the local backup script provides plenty of inspiration for creating your own script with
+<code>rclone</code>. Good luck!</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>So, looking back over the checklist we got: automatic ✓, frequent ✓, efficient ✓*, distributed ✓. Some
+might argue that spending hours writing a script for a problem that has already been solved is not
+efficient. Maybe they have a point. But, you wouldn&rsquo;t be reading random programming blogs if that
+approach didn&rsquo;t appeal to you at least a little bit.</p>
+
+    </div>
+    
+      
+    
+
+    
+      
+        
+
+      
+    
+  </div>
+
+      </div>
+
+      
+        <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright copyright--user">© 2020 Trevor McKay</div>
+      
+  </div>
+</footer>
+
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+      
+    </div>
+
+    
+  </body>
+</html>
