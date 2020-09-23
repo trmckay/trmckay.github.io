@@ -280,7 +280,7 @@ DESTINATIONS<span style="color:#f92672">[</span>1<span style="color:#f92672">]=<
 
 <span style="color:#66d9ef">for</span> CURR_SOURCE in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SOURCES[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
     <span style="color:#66d9ef">for</span> CURR_DEST in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DESTINATIONS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
-        rsync -a --quiet --delete $CURR_SOURCE $CURR_DEST
+        rsync -a --quiet --delete $CURR_SOURCE $CURR_DEST/<span style="color:#66d9ef">$(</span>dirname $CURR_SOURCE<span style="color:#66d9ef">)</span>
     <span style="color:#66d9ef">done</span>
 <span style="color:#66d9ef">done</span>
 </code></pre></div><p>Now, we have a script that will take each source and back it up to each destination. Ideally, your
@@ -378,7 +378,7 @@ echo <span style="color:#e6db74">&#34;Synchronizing sources to destinations...&#
 <span style="color:#66d9ef">for</span> CURR_SOURCE in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>TARGETS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
     <span style="color:#66d9ef">for</span> CURR_DEST in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DESTINATIONS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
         mkdir -p $CURR_DEST/$CURR_SOURCE
-        rsync -a --quiet --delete $CURR_SOURCE $CURR_DEST &gt; /dev/null &amp;
+        rsync -a --quiet --delete $CURR_SOURCE $CURR_DEST/<span style="color:#66d9ef">$(</span>dirname $CURR_SOURCE<span style="color:#66d9ef">)</span> &gt; /dev/null &amp;
     <span style="color:#66d9ef">done</span>
 <span style="color:#66d9ef">done</span>
 wait
@@ -433,7 +433,7 @@ tar cf - $SOURCE_DIR | pigz &gt; $DESTINATION_FILE
 </code></pre></div><p>You can set this up as a asynchronous cron job, just like the local backup. Make a link to that
 script in <code>/etc/cron.weekly</code> and you&rsquo;re good to go.</p>
 <p>If you are not using Dropbox, this is a little trickier to do. However, it is possible. <code>rclone</code> is
-a utility that supports Onedrive, Google Drive, and more. It&rsquo;s syntax is very similar to <code>rsync</code>'s.
+a utility that supports Onedrive, Google Drive, and more. It&rsquo;s syntax is very similar to <code>rsync</code>&rsquo;s.
 I&rsquo;m sure the local backup script provides plenty of inspiration for creating your own script with
 <code>rclone</code>. Good luck!</p>
 <h1 id="conclusion">Conclusion</h1>
