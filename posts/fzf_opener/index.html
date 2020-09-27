@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+      <title>
+        _fzf-open_: a fuzzy file search with a sensible opener ::
+        trevor mckay
+      </title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta
+  name="description"
+  content="Just like macOS Spotlight, but different!
+One of my most sorely missed features from macOS was the Spotlight search. It can be incredibly helpful to open the search, type a few characters, and be viewing/editing the file I want within just moments.
+This, unfortunately, does not exist in Linux outside of similar features integrated in desktop environments such as Gnome. What to do if your favorite DE does not have such a feature or you only have a window manager?"
+/>
+<meta
+  name="keywords"
+  content="blog, posts, portfolio, development, coding"
+/>
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/fzf_opener/" />
+
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css" />
+
+<link rel="stylesheet" href="/style.css" />
+
+
+<link
+  rel="apple-touch-icon-precomposed"
+  sizes="144x144"
+  href="/img/apple-touch-icon-144-precomposed.png"
+/>
+<link rel="shortcut icon" href="/img/favicon.png" />
+
+
+<link href="/assets/fonts/Inter-Italic.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+<link href="/assets/fonts/Inter-Regular.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+<link href="/assets/fonts/Inter-Medium.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+<link href="/assets/fonts/Inter-MediumItalic.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+<link href="/assets/fonts/Inter-Bold.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+<link href="/assets/fonts/Inter-BoldItalic.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="_fzf-open_: a fuzzy file search with a sensible opener"/>
+<meta name="twitter:description" content="Just like macOS Spotlight, but different!
+One of my most sorely missed features from macOS was the Spotlight search. It can be incredibly helpful to open the search, type a few characters, and be viewing/editing the file I want within just moments.
+This, unfortunately, does not exist in Linux outside of similar features integrated in desktop environments such as Gnome. What to do if your favorite DE does not have such a feature or you only have a window manager?"/>
+
+
+
+<meta property="og:title" content="_fzf-open_: a fuzzy file search with a sensible opener" />
+<meta property="og:description" content="Just like macOS Spotlight, but different!
+One of my most sorely missed features from macOS was the Spotlight search. It can be incredibly helpful to open the search, type a few characters, and be viewing/editing the file I want within just moments.
+This, unfortunately, does not exist in Linux outside of similar features integrated in desktop environments such as Gnome. What to do if your favorite DE does not have such a feature or you only have a window manager?" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/posts/fzf_opener/" />
+<meta property="article:published_time" content="2020-09-26T20:59:00-07:00" />
+<meta property="article:modified_time" content="2020-09-26T20:59:00-07:00" /><meta property="og:site_name" content="trevor mckay" />
+
+
+
+
+
+
+  </head>
+  <body class="dark-theme">
+    <div class="container">
+      <header class="header">
+  <span class="header__inner">
+    <a
+  href="/"
+  class="logo"
+  style="text-decoration: none;"
+>
+  
+    <span class="logo__mark"><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44">
+  <path fill="none" d="M15 8l14.729 14.382L15 35.367" />
+</svg>
+</span>
+    <span class="logo__text"
+      >/home/trevor_mckay </span
+    >
+    <span class="logo__cursor"></span>
+  
+</a>
+
+    <span class="header__right">
+      
+        <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="https://github.com/trmckay">GitHub</a></li>
+        
+      
+        
+          <li><a href="https://www.linkedin.com/in/trevor-mckay-1602a5180/">LinkedIn</a></li>
+        
+      
+        
+          <li><a href="/posts">Posts</a></li>
+        
+      
+      
+      
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="https://github.com/trmckay">GitHub</a></li>
+      
+    
+      
+        <li><a href="https://www.linkedin.com/in/trevor-mckay-1602a5180/">LinkedIn</a></li>
+      
+    
+      
+        <li><a href="/posts">Posts</a></li>
+      
+    
+  </ul>
+</nav>
+
+        <span class="menu-trigger">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M0 0h24v24H0z" fill="none" />
+            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+          </svg>
+        </span>
+      
+      <span class="theme-toggle">
+        <svg
+  class="theme-toggler"
+  width="24"
+  height="24"
+  viewBox="0 0 48 48"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path
+    d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
+  3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7
+  13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"
+  />
+</svg>
+
+      </span>
+    </span>
+  </span>
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-178435018-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-178435018-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+</header>
+
+
+      <div class="content">
+        
+  
+  
+
+  <div class="post">
+    <h1 class="post-title"><em>fzf-open</em>: a fuzzy file search with a sensible opener</h1>
+    <div class="post-meta">
+      
+        <span class="post-date">
+          2020-09-26
+        </span>
+
+        
+          
+        
+      
+
+      
+
+
+      
+    </div>
+
+    
+
+    
+      <figure class="post-cover">
+        
+          <img src="/img/fzf_open_demo.gif" alt="_fzf-open_: a fuzzy file search with a sensible opener" />
+        
+
+        
+      </figure>
+    
+
+    <div class="post-content">
+      
+      <p><strong><em>Just like macOS Spotlight, but different!</em></strong></p>
+<p>One of my most sorely missed features from macOS was the Spotlight search. It can be incredibly
+helpful to open the search, type a few characters, and be viewing/editing the file I want within
+just moments.</p>
+<p>This, unfortunately, does not exist in Linux outside of similar features integrated in desktop
+environments such as Gnome. What to do if your favorite DE does not have such a feature or you only
+have a window manager?</p>
+<p><code>fzf</code> alone comes close to filling this niche. But there are still some features I am looking for
+that are out of <code>fzf</code>&rsquo;s scope. For example, lets say I want to open some file in <code>vim</code>, but it&rsquo;s
+deep in my file system and I don&rsquo;t feel like typing right now. I can open a terminal, type <code>vim $(fzf)</code>, and proceed to edit my file. This actually works pretty well, but it still could be
+faster. It starts to get a little sloppy with non-terminal programs. If I were to do the same thing
+but open a video in <code>mpv</code> instead, I would now have both the terminal I just created, and the video
+player. Chances are, I really don&rsquo;t care about that terminal. But, if I close it, there goes the
+program I just opened. This problem is especially bad with tiling window managers.</p>
+<p><code>fzf-open</code> attempts to solve this problem by creating its own terminal and not attaching
+applications to it when they&rsquo;re opened. It also includes a custom opener that can be used instead
+of, say, <code>xdg-open</code> that can open files in terminal applications (<code>vim</code>). It&rsquo;s also pretty
+configurable, so it should work with any terminal.</p>
+<p>I use it in my window manager by binding it to <em>super+o</em> and floating the window. The resulting
+effect is shown at the top of the article.</p>
+<h1 id="some-information-from-the-repository">Some information from the repository</h1>
+<h2 id="features">Features</h2>
+<ul>
+<li>Customizable: supports configuration of terminals and openers</li>
+<li>Designed to be launched easily from a hotkey</li>
+<li>Comes with a simple opener: <code>xdg-open</code> <strong>not</strong> required</li>
+<li>Fast: uses the fantastic <a href="https://github.com/junegunn/fzf">fzf</a></li>
+</ul>
+<h2 id="installation">Installation</h2>
+<h3 id="arch-based">Arch based</h3>
+<p>For Arch based distros, <code>fzf-open</code> is <a href="https://aur.archlinux.org/packages/fzf-open/">on the AUR</a>.</p>
+<pre><code>yay -S fzf-open
+</code></pre><h3 id="other-distros">Other distros</h3>
+<p><strong>Requirements</strong>:</p>
+<ul>
+<li>python</li>
+<li>fzf</li>
+</ul>
+<p>For other distros, installation is still simple:</p>
+<pre><code>git clone https://github.com/trmckay/fzf-open.git
+cd fzf-open
+sudo ./install.sh
+cd ..
+rm -rf fzf-open
+</code></pre><p>Don&rsquo;t forget to configure!</p>
+<h2 id="configuration">Configuration</h2>
+<p>Install and run <code>fzf-open</code> at least once for it to create config files.
+Configuration is located at <code>$HOME/.config/fzf-open/config</code>.
+An example configuration file is also included in <code>/usr/share/fzf-open/example_config</code>.</p>
+<p><strong>Configuration keys</strong> (absolute paths only, no environment variables):</p>
+<table>
+<thead>
+<tr>
+<th>KEY</th>
+<th>DEFUALT VALUE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OPENER</code></td>
+<td><code>~/.config/lopen.sh</code></td>
+</tr>
+<tr>
+<td><code>TERMINAL</code></td>
+<td><code>xterm</code></td>
+</tr>
+<tr>
+<td><code>STARTING_DIR</code></td>
+<td><code>~/</code></td>
+</tr>
+<tr>
+<td><code>WIN_TITLE</code></td>
+<td><code>fzf-open-run</code></td>
+</tr>
+<tr>
+<td><code>WIN_TITLE_FLAG</code></td>
+<td><code>--title</code></td>
+</tr>
+<tr>
+<td><code>SPAWN_TERM</code></td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+<p>Most of these can be overwitten by flags:</p>
+<table>
+<thead>
+<tr>
+<th>FLAG</th>
+<th>EFFECT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-n</code></td>
+<td>Spawn a new terminal with <code>fzf-open</code></td>
+</tr>
+<tr>
+<td><code>-o &quot;opener&quot;</code></td>
+<td>Use this as the opener</td>
+</tr>
+<tr>
+<td><code>-d &quot;dir&quot;</code></td>
+<td>Start in this directory</td>
+</tr>
+<tr>
+<td><code>-t</code> &ldquo;term&rdquo;</td>
+<td>Use this terminal program</td>
+</tr>
+</tbody>
+</table>
+<p>If you choose to keep, <code>lopen.sh</code> as the opener. You should customize it at <code>$HOME/.config/fzf-open/lopen.sh</code>, especially if the following
+default applications do not look sane:</p>
+<table>
+<thead>
+<tr>
+<th>FILETYPE</th>
+<th>APPLICATION</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Images</td>
+<td><code>feh</code></td>
+</tr>
+<tr>
+<td>Videos</td>
+<td><code>mpv</code></td>
+</tr>
+<tr>
+<td>Text</td>
+<td><code>vim</code></td>
+</tr>
+<tr>
+<td>PDF</td>
+<td><code>zathura</code></td>
+</tr>
+<tr>
+<td>Web</td>
+<td><code>firefox</code></td>
+</tr>
+<tr>
+<td>Terminal</td>
+<td><code>urxvt</code></td>
+</tr>
+</tbody>
+</table>
+
+    </div>
+    
+      
+        <div class="pagination">
+          <div class="pagination__title">
+            <span class="pagination__title-h"
+              >Read other posts</span
+            >
+            <hr />
+          </div>
+          <div class="pagination__buttons">
+            
+            
+              <span class="button next">
+                <a href="/posts/rsync-anacron-backups/">
+                  <span class="button__text">Automated backups with _rsync_, _anacron_, and the cloud</span>
+                  <span class="button__icon">→</span>
+                </a>
+              </span>
+            
+          </div>
+        </div>
+      
+    
+
+    
+      
+        
+
+      
+    
+  </div>
+
+      </div>
+
+      
+        <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright copyright--user">© 2020 Trevor McKay</div>
+      
+  </div>
+</footer>
+
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+      
+    </div>
+
+    
+      
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-178435018-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+    
+  </body>
+</html>
