@@ -37,6 +37,26 @@ This, unfortunately, does not exist in Linux outside of similar features integra
     </item>
     
     <item>
+      <title>Automated backups with _rsync_, _anacron_, and the cloud</title>
+      <link>/posts/rsync-anacron-backups/</link>
+      <pubDate>Fri, 18 Sep 2020 16:22:55 -0700</pubDate>
+      
+      <guid>/posts/rsync-anacron-backups/</guid>
+      <description>
+        
+          
+          
+          
+        
+        
+        
+          Anyone using Linux as their daily driver knows how devastating it can be to lose all your personal and configuration files to hardware failure. As such, most users have some way to keep their files safe. Many choose to use some sort of dotfile management system. This is is a great choice as it allows for version control and branches for multiple machines. However, dotfiles are not the only thing you want to preserve.
+          
+        
+        </description>
+    </item>
+    
+    <item>
       <title></title>
       <link>/about/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -52,26 +72,6 @@ This, unfortunately, does not exist in Linux outside of similar features integra
         
           Hello, my name is Trevor. I am a student pursuing a degree in Computer Engineering with a minor in German Language and Culture. I like hardware design and FPGAs, RISC-V, embedded, and Linux. I also like the outdoors, cycling and volleyball!
 I am currently looking for work! Here is some of my relevent experience and skills, at a glance. Of course, you can always just email me if you&amp;rsquo;d rather have my resume.
-          
-        
-        </description>
-    </item>
-    
-    <item>
-      <title>Automated backups with _rsync_, _anacron_, and the cloud</title>
-      <link>/posts/rsync-anacron-backups/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/posts/rsync-anacron-backups/</guid>
-      <description>
-        
-          
-          
-          
-        
-        
-        
-          Anyone using Linux as their daily driver knows how devastating it can be to lose all your personal and configuration files to hardware failure. As such, most users have some way to keep their files safe. Many choose to use some sort of dotfile management system. This is is a great choice as it allows for version control and branches for multiple machines. However, dotfiles are not the only thing you want to preserve.
           
         
         </description>

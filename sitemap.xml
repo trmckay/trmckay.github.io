@@ -18,12 +18,13 @@
   </url>
   
   <url>
-    <loc>/about/</loc>
-    <priority>0</priority>
+    <loc>/posts/rsync-anacron-backups/</loc>
+    <lastmod>2020-09-18T16:22:55-07:00</lastmod>
   </url>
   
   <url>
-    <loc>/posts/rsync-anacron-backups/</loc>
+    <loc>/about/</loc>
+    <priority>0</priority>
   </url>
   
   <url>
