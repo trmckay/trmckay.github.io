@@ -10,31 +10,10 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>© 2021 Trevor McKay</copyright>
-    <lastBuildDate>Sat, 26 Sep 2020 20:59:00 -0700</lastBuildDate>
+    <lastBuildDate>Fri, 18 Sep 2020 16:22:55 -0700</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>_fzf-open_: a fuzzy file search with a sensible opener</title>
-      <link>/posts/fzf_opener/</link>
-      <pubDate>Sat, 26 Sep 2020 20:59:00 -0700</pubDate>
-      
-      <guid>/posts/fzf_opener/</guid>
-      <description>
-        
-          &lt;img src=&#34;/img/fzf_open_demo.gif&#34;/&gt;
-          
-        
-        
-        
-          Just like macOS Spotlight, but different!
-One of my most sorely missed features from macOS was the Spotlight search. It can be incredibly helpful to open the search, type a few characters, and be viewing/editing the file I want within just moments.
-This, unfortunately, does not exist in Linux outside of similar features integrated in desktop environments such as Gnome. What to do if your favorite DE does not have such a feature or you only have a window manager?
-          
-        
-        </description>
-    </item>
     
     <item>
       <title>Automated backups with _rsync_, _anacron_, and the cloud</title>

@@ -4,22 +4,17 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2020-09-26T20:59:00-07:00</lastmod>
+    <lastmod>2020-09-18T16:22:55-07:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/posts/fzf_opener/</loc>
-    <lastmod>2020-09-26T20:59:00-07:00</lastmod>
+    <loc>/posts/rsync-anacron-backups/</loc>
+    <lastmod>2020-09-18T16:22:55-07:00</lastmod>
   </url>
   
   <url>
     <loc>/posts/</loc>
-    <lastmod>2020-09-26T20:59:00-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/posts/rsync-anacron-backups/</loc>
     <lastmod>2020-09-18T16:22:55-07:00</lastmod>
   </url>
   
