@@ -57,26 +57,5 @@ Some problems can be solved both iteratively and recursively. Due to the way a c
         </description>
     </item>
     
-    <item>
-      <title></title>
-      <link>/about/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/about/</guid>
-      <description>
-        
-          
-          
-          
-        
-        
-        
-          Hello, my name is Trevor. I am a student pursuing a degree in Computer Engineering with a minor in German Language and Culture. I like hardware design, FPGAs, RISC-V, Rust, and Linux. I also like the outdoors, cycling and volleyball!
-I am open for work!
-          
-        
-        </description>
-    </item>
-    
   </channel>
 </rss>
