@@ -1,60 +1,42 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>trevor mckay</title>
-    
-    
-    
-    <link>/</link>
-    <description>Recent content on trevor mckay</description>
+    <title>About on Trevor McKay</title>
+    <link>https://www.trmckay.com/</link>
+    <description>Recent content in About on Trevor McKay</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <copyright>© 2021 Trevor McKay</copyright>
-    <lastBuildDate>Sun, 31 Jan 2021 18:48:09 -0800</lastBuildDate>
-    
-	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sun, 31 Jan 2021 18:48:09 -0800</lastBuildDate><atom:link href="https://www.trmckay.com/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Exercises in assembly: recursion</title>
-      <link>/posts/fib_asm/</link>
+      <link>https://www.trmckay.com/posts/fib_asm/</link>
       <pubDate>Sun, 31 Jan 2021 18:48:09 -0800</pubDate>
       
-      <guid>/posts/fib_asm/</guid>
-      <description>
-        
-          
-          
-          
-        
-        
-        
-          Trying to implement a recursive algorithm in assembly is both a challenging puzzle and very informative exercise to demonstrate some important properties of recursion and function calls in general.
+      <guid>https://www.trmckay.com/posts/fib_asm/</guid>
+      <description>Trying to implement a recursive algorithm in assembly is both a challenging puzzle and very informative exercise to demonstrate some important properties of recursion and function calls in general.
 Recursion Recursion is super important for writing clean and concise solutions to a whole subset of programming tasks. That&amp;rsquo;s not to say it&amp;rsquo;s without its drawbacks.
-Some problems can be solved both iteratively and recursively. Due to the way a computer works—specifically the stack—the recursive solution often produces less efficient code.
-          
-        
-        </description>
+Some problems can be solved both iteratively and recursively. Due to the way a computer works—specifically the stack—the recursive solution often produces less efficient code.</description>
     </item>
     
     <item>
       <title>Automated backups with _rsync_, _anacron_, and the cloud</title>
-      <link>/posts/rsync-anacron-backups/</link>
+      <link>https://www.trmckay.com/posts/rsync-anacron-backups/</link>
       <pubDate>Fri, 18 Sep 2020 16:22:55 -0700</pubDate>
       
-      <guid>/posts/rsync-anacron-backups/</guid>
-      <description>
-        
-          
-          
-          
-        
-        
-        
-          Everyone knows how devastating it can be to lose all your personal and configuration files to hardware failure. As such, most users have some way to keep their files safe. Many choose to use some sort of dotfile management system. This is is a great choice as it allows for version control and branches for multiple machines. However, dotfiles are not the only thing you want to preserve. Furthermore, when it comes to backups, more redundancy is never a bad thing.
-          
-        
-        </description>
+      <guid>https://www.trmckay.com/posts/rsync-anacron-backups/</guid>
+      <description>Everyone knows how devastating it can be to lose all your personal and configuration files to hardware failure. As such, most users have some way to keep their files safe. Many choose to use some sort of dotfile management system. This is is a great choice as it allows for version control and branches for multiple machines. However, dotfiles are not the only thing you want to preserve. Furthermore, when it comes to backups, more redundancy is never a bad thing.</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>https://www.trmckay.com/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.trmckay.com/about/</guid>
+      <description>About:  I am a student pursuing a degree in Computer Engineering with a minor in German Language and Culture. I like computer architecture, embedded, RISC-V, Rust, and Linux. When I have time, I like to camp, read, cycle and play volleyball!
+Projects: Serial UART debugger (verilog module and software client) for debugging 32-bit RISC-V soft-cores
+trmckay/riscv-uart-debugger
+Kernel convolution, including Sobel edge-detection, for embedded devices with no hardware multiplication
+trmckay/riscv-kernel-convolution</description>
     </item>
     
   </channel>
