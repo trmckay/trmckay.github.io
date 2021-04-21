@@ -1,54 +1,62 @@
 <!DOCTYPE html>
 <html><head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <title>Automated backups with _rsync_, _anacron_, and the cloud</title>
-    <meta name="description" content="Landing page for my interests">
-    <meta name="author" content='Trevor McKay'>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-
-    
-    <link rel="stylesheet" href="/sass/researcher.min.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="your description">
+    <meta name="Author" content="Trevor McKay">
+    <meta name="keywords" content="hugo blog">
+    <link rel="stylesheet" href=https://www.trmckay.com/css/syntax.css>
+    <link rel="stylesheet" href=https://www.trmckay.com/css/style.css>
+    <script src="https://kit.fontawesome.com/1b7478c139.js" crossorigin="anonymous"></script>
+    <title>Trevor McKay</title>
+  </head><body><aside id="sidenav">
+    <header>
     
 
-    
+    <a id="branding" href=https://www.trmckay.com>
         
-    
-</head>
+            Trevor McKay
+        
+    </a>
+    </header>
 
-    <body><div class="container mt-5">
-    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
-        <a class="navbar-brand mx-0 mr-sm-auto" href="https://www.trmckay.com">
-          
-          Trevor McKay
-        </a>
-        <div class="navbar-nav flex-row flex-wrap justify-content-center">
-            
+    <nav>
+        
+            		
+            <a href="/"
                 
+            >
+                <i class="fas fa-home fa-sm"></i>
+                <span>home</span>
+            </a>
+        
+            		
+            <a href="https://github.com/trmckay"
                 
-                    <a class="nav-item nav-link" href="/posts">
-                        Posts
-                    </a>
-                    
-                        <span class="nav-item navbar-text mx-1">/</span>
-                    
+                    target="_blank"
                 
-                    <a class="nav-item nav-link" href="/trmckay_resume.pdf">
-                        Resume
-                    </a>
-                    
+            >
+                <i class="fab fa-github fa-ms"></i>
+                <span>github</span>
+            </a>
+        
+            		
+            <a href="/about"
                 
-            
-        </div>
+            >
+                <i class="far fa-envelope"></i>
+                <span>about</span>
+            </a>
+        
     </nav>
-</div>
-<hr>
-<div id="content">
-<div class="container">
+</aside>
+<main id="main">
+            <div class="content">
+    
+    <h1 id="title">Automate backups with rsync</h1>
+    
+      
+    <nav id="TableOfContents"></nav>
     <p>Everyone knows how devastating it can be to lose all your personal
 and configuration files to hardware failure. As such, most users have some way to keep their files
 safe. Many choose to use some sort of dotfile management system. This is is a great choice as it
@@ -77,13 +85,13 @@ you do not have them already.</p>
 <p>Let&rsquo;s first create a script&ndash;well, for now it&rsquo;s basically just one command&ndash;that can simply
 copy one folder to another. We could use <code>cp</code>, but lets use <code>rsync</code> for <em>speed</em> (among other things).
 Here it is:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
-</span><span style="color:#75715e"></span>
-SOURCE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span>
-DEST<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$2<span style="color:#e6db74">&#34;</span>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/bash
+</span><span class="cp"></span>
+<span class="nv">SOURCE</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span>
+<span class="nv">DEST</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$2</span><span class="s2">&#34;</span>
 
-echo <span style="color:#e6db74">&#34;Synchronizing </span>$SOURCE<span style="color:#e6db74"> to </span>$DEST<span style="color:#e6db74">...&#34;</span>
-rsync -a --delete $SOURCE $DEST
+<span class="nb">echo</span> <span class="s2">&#34;Synchronizing </span><span class="nv">$SOURCE</span><span class="s2"> to </span><span class="nv">$DEST</span><span class="s2">...&#34;</span>
+rsync -a --delete <span class="nv">$SOURCE</span> <span class="nv">$DEST</span>
 </code></pre></div><p>This is arguably the most important command of the backup script we are
 working up to, so let&rsquo;s take a moment to digest it. The <code>-a</code> (<code>--archive</code>) flag is to preserve
 pretty much everything. <code>--delete</code> is whats going
@@ -99,44 +107,44 @@ something to be mindful of as we expand our script.</p>
 <h1 id="backing-up-more-than-one-directory">Backing up more than one directory</h1>
 <p>Wouldn&rsquo;t it be nice if we could back up a bunch of directories at once? I
 agree. We can put our sources and destinations in an array like so:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># sources for backups</span>
-declare -a SOURCES
-SOURCES<span style="color:#f92672">[</span>0<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/home&#34;</span>
-SOURCES<span style="color:#f92672">[</span>1<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/etc&#34;</span>
-SOURCES<span style="color:#f92672">[</span>2<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/var/log&#34;</span>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># sources for backups</span>
+<span class="nb">declare</span> -a SOURCES
+SOURCES<span class="o">[</span>0<span class="o">]=</span><span class="s2">&#34;/home&#34;</span>
+SOURCES<span class="o">[</span>1<span class="o">]=</span><span class="s2">&#34;/etc&#34;</span>
+SOURCES<span class="o">[</span>2<span class="o">]=</span><span class="s2">&#34;/var/log&#34;</span>
 
-<span style="color:#75715e"># destinations for backup</span>
-declare -a DESTINATIONS
-DESTINATIONS<span style="color:#f92672">[</span>0<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/mnt/hdd1/backups/daily&#34;</span>
-DESTINATIONS<span style="color:#f92672">[</span>1<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/mnt/hdd0/backups/daily&#34;</span>
+<span class="c1"># destinations for backup</span>
+<span class="nb">declare</span> -a DESTINATIONS
+DESTINATIONS<span class="o">[</span>0<span class="o">]=</span><span class="s2">&#34;/mnt/hdd1/backups/daily&#34;</span>
+DESTINATIONS<span class="o">[</span>1<span class="o">]=</span><span class="s2">&#34;/mnt/hdd0/backups/daily&#34;</span>
 
-<span style="color:#66d9ef">for</span> CURR_SOURCE in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SOURCES[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
-    <span style="color:#66d9ef">for</span> CURR_DEST in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DESTINATIONS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
-        rsync -a --quiet --delete $CURR_SOURCE $CURR_DEST/<span style="color:#66d9ef">$(</span>dirname $CURR_SOURCE<span style="color:#66d9ef">)</span>
-    <span style="color:#66d9ef">done</span>
-<span style="color:#66d9ef">done</span>
+<span class="k">for</span> CURR_SOURCE in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">SOURCES</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
+    <span class="k">for</span> CURR_DEST in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">DESTINATIONS</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
+        rsync -a --quiet --delete <span class="nv">$CURR_SOURCE</span> <span class="nv">$CURR_DEST</span>/<span class="k">$(</span>dirname <span class="nv">$CURR_SOURCE</span><span class="k">)</span>
+    <span class="k">done</span>
+<span class="k">done</span>
 </code></pre></div><p>Now, we have a script that will take each source and back it up to each destination. Ideally, your
 destinations are all on different drives. That&rsquo;s +1 point in the distributed criterion. Furthermore,
 if your destinations are connected via SSH, you can use <code>rsync</code> like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">rsync -a --quiet --delete --rsh<span style="color:#f92672">=</span>ssh $CURR_SOURCE $CURR_DEST
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">rsync -a --quiet --delete --rsh<span class="o">=</span>ssh <span class="nv">$CURR_SOURCE</span> <span class="nv">$CURR_DEST</span>
 </code></pre></div><h1 id="adding-some-nice-features">Adding some nice features</h1>
 <p>This is a good start, but we are still missing some QoL features. Some that came to mind when
 writing this were notifications, backup rotation, and checking that destinations exist.</p>
 <p>Beginning with device checking, I went for the &ldquo;low-tech but definitely works&rdquo; approach. You can
 simply declare an array of all the mount locations the script will be writing to and check them:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># these disks will be checked on run</span>
-declare -a DISKS
-DISKS<span style="color:#f92672">[</span>0<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/mnt/hdd0&#34;</span>
-DISKS<span style="color:#f92672">[</span>1<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/mnt/hdd1&#34;</span>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># these disks will be checked on run</span>
+<span class="nb">declare</span> -a DISKS
+DISKS<span class="o">[</span>0<span class="o">]=</span><span class="s2">&#34;/mnt/hdd0&#34;</span>
+DISKS<span class="o">[</span>1<span class="o">]=</span><span class="s2">&#34;/mnt/hdd1&#34;</span>
 
-<span style="color:#66d9ef">for</span> CURR_DISK in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DISKS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>mount | grep $CURR_DISK<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
-        echo <span style="color:#e6db74">&#34;</span>$CURR_DISK<span style="color:#e6db74"> found&#34;</span>
-    <span style="color:#66d9ef">else</span>
-        echo <span style="color:#e6db74">&#34;</span>$CURR_DISK<span style="color:#e6db74"> not found, aborting&#34;</span>
-        exit
-    <span style="color:#66d9ef">fi</span>
-<span style="color:#66d9ef">done</span>
+<span class="k">for</span> CURR_DISK in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">DISKS</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
+    <span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="k">$(</span>mount <span class="p">|</span> grep <span class="nv">$CURR_DISK</span><span class="k">)</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+        <span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$CURR_DISK</span><span class="s2"> found&#34;</span>
+    <span class="k">else</span>
+        <span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$CURR_DISK</span><span class="s2"> not found, aborting&#34;</span>
+        <span class="nb">exit</span>
+    <span class="k">fi</span>
+<span class="k">done</span>
 </code></pre></div><p>As for notifications, <code>notify-send</code> will work just fine as long as you have a notification server
 set up (if you don&rsquo;t know what that is, don&rsquo;t worry, you probably have one). I just have my script
 issue a notification when it runs and when it finishes. It can be useful to keep track of that
@@ -146,77 +154,77 @@ directory, this will certainly affect you. You can use this function to work aro
 (credit goes to
 <a href="https://stackoverflow.com/questions/28195805/running-notify-send-as-root">Fabio A. on StackOverflow</a>
 for that):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#66d9ef">function</span> notify-send<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-    local display<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;:</span><span style="color:#66d9ef">$(</span>ls /tmp/.X11-unix/* | sed <span style="color:#e6db74">&#39;s#/tmp/.X11-unix/X##&#39;</span> | head -n 1<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
-    local user<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>who | grep <span style="color:#e6db74">&#39;(&#39;</span>$display<span style="color:#e6db74">&#39;)&#39;</span> | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> | head -n 1<span style="color:#66d9ef">)</span>
-    local uid<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>id -u $user<span style="color:#66d9ef">)</span>
-    sudo -u $user DISPLAY<span style="color:#f92672">=</span>$display DBUS_SESSION_BUS_ADDRESS<span style="color:#f92672">=</span>unix:path<span style="color:#f92672">=</span>/run/user/$uid/bus notify-send <span style="color:#e6db74">&#34;</span>$@<span style="color:#e6db74">&#34;</span>
-<span style="color:#f92672">}</span>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="k">function</span> notify-send<span class="o">()</span> <span class="o">{</span>
+    <span class="nb">local</span> <span class="nv">display</span><span class="o">=</span><span class="s2">&#34;:</span><span class="k">$(</span>ls /tmp/.X11-unix/* <span class="p">|</span> sed <span class="s1">&#39;s#/tmp/.X11-unix/X##&#39;</span> <span class="p">|</span> head -n 1<span class="k">)</span><span class="s2">&#34;</span>
+    <span class="nb">local</span> <span class="nv">user</span><span class="o">=</span><span class="k">$(</span>who <span class="p">|</span> grep <span class="s1">&#39;(&#39;</span><span class="nv">$display</span><span class="s1">&#39;)&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span> <span class="p">|</span> head -n 1<span class="k">)</span>
+    <span class="nb">local</span> <span class="nv">uid</span><span class="o">=</span><span class="k">$(</span>id -u <span class="nv">$user</span><span class="k">)</span>
+    sudo -u <span class="nv">$user</span> <span class="nv">DISPLAY</span><span class="o">=</span><span class="nv">$display</span> <span class="nv">DBUS_SESSION_BUS_ADDRESS</span><span class="o">=</span>unix:path<span class="o">=</span>/run/user/<span class="nv">$uid</span>/bus notify-send <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+<span class="o">}</span>
 </code></pre></div><p>One last feature to add is backup rotation. Like I said earlier, redundancy is never bad. So it
 can&rsquo;t hurt to keep more if you can spare the disk space. In my case, I opted for one level of
 redundancy, but the logic is simple to adapt to more than one level. Essentially, before backing up
 the source directory to the target, the target is copied to a <code>.old</code> directory.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#66d9ef">for</span> CURR_DEST in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DESTINATIONS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
-    rsync -a --quiet --delete $CURR_DEST/* $CURR_DEST.old
-<span style="color:#66d9ef">done</span>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="k">for</span> CURR_DEST in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">DESTINATIONS</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
+    rsync -a --quiet --delete <span class="nv">$CURR_DEST</span>/* <span class="nv">$CURR_DEST</span>.old
+<span class="k">done</span>
 </code></pre></div><h1 id="bringing-it-all-together">Bringing it all together</h1>
 <p>Let&rsquo;s take these concepts and make them into a single useful script.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
-</span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">function</span> notify-send<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-    local display<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;:</span><span style="color:#66d9ef">$(</span>ls /tmp/.X11-unix/* | sed <span style="color:#e6db74">&#39;s#/tmp/.X11-unix/X##&#39;</span> | head -n 1<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
-    local user<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>who | grep <span style="color:#e6db74">&#39;(&#39;</span>$display<span style="color:#e6db74">&#39;)&#39;</span> | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> | head -n 1<span style="color:#66d9ef">)</span>
-    local uid<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>id -u $user<span style="color:#66d9ef">)</span>
-    sudo -u $user DISPLAY<span style="color:#f92672">=</span>$display DBUS_SESSION_BUS_ADDRESS<span style="color:#f92672">=</span>unix:path<span style="color:#f92672">=</span>/run/user/$uid/bus notify-send <span style="color:#e6db74">&#34;</span>$@<span style="color:#e6db74">&#34;</span>
-<span style="color:#f92672">}</span>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/bash
+</span><span class="cp"></span>
+<span class="k">function</span> notify-send<span class="o">()</span> <span class="o">{</span>
+    <span class="nb">local</span> <span class="nv">display</span><span class="o">=</span><span class="s2">&#34;:</span><span class="k">$(</span>ls /tmp/.X11-unix/* <span class="p">|</span> sed <span class="s1">&#39;s#/tmp/.X11-unix/X##&#39;</span> <span class="p">|</span> head -n 1<span class="k">)</span><span class="s2">&#34;</span>
+    <span class="nb">local</span> <span class="nv">user</span><span class="o">=</span><span class="k">$(</span>who <span class="p">|</span> grep <span class="s1">&#39;(&#39;</span><span class="nv">$display</span><span class="s1">&#39;)&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span> <span class="p">|</span> head -n 1<span class="k">)</span>
+    <span class="nb">local</span> <span class="nv">uid</span><span class="o">=</span><span class="k">$(</span>id -u <span class="nv">$user</span><span class="k">)</span>
+    sudo -u <span class="nv">$user</span> <span class="nv">DISPLAY</span><span class="o">=</span><span class="nv">$display</span> <span class="nv">DBUS_SESSION_BUS_ADDRESS</span><span class="o">=</span>unix:path<span class="o">=</span>/run/user/<span class="nv">$uid</span>/bus notify-send <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+<span class="o">}</span>
 
-<span style="color:#75715e"># sources for backups</span>
-declare -a TARGETS
-TARGETS<span style="color:#f92672">[</span>0<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/home&#34;</span>
-TARGETS<span style="color:#f92672">[</span>1<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/etc&#34;</span>
-TARGETS<span style="color:#f92672">[</span>2<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/var/log&#34;</span>
+<span class="c1"># sources for backups</span>
+<span class="nb">declare</span> -a TARGETS
+TARGETS<span class="o">[</span>0<span class="o">]=</span><span class="s2">&#34;/home&#34;</span>
+TARGETS<span class="o">[</span>1<span class="o">]=</span><span class="s2">&#34;/etc&#34;</span>
+TARGETS<span class="o">[</span>2<span class="o">]=</span><span class="s2">&#34;/var/log&#34;</span>
 
-<span style="color:#75715e"># destinations for backup</span>
-<span style="color:#75715e"># folders will contain ALL targets after backup</span>
-declare -a DESTINATIONS
-DESTINATIONS<span style="color:#f92672">[</span>0<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/mnt/hdd1/backups/daily&#34;</span>
-DESTINATIONS<span style="color:#f92672">[</span>1<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/mnt/hdd0/backups/daily&#34;</span>
+<span class="c1"># destinations for backup</span>
+<span class="c1"># folders will contain ALL targets after backup</span>
+<span class="nb">declare</span> -a DESTINATIONS
+DESTINATIONS<span class="o">[</span>0<span class="o">]=</span><span class="s2">&#34;/mnt/hdd1/backups/daily&#34;</span>
+DESTINATIONS<span class="o">[</span>1<span class="o">]=</span><span class="s2">&#34;/mnt/hdd0/backups/daily&#34;</span>
 
-<span style="color:#75715e"># these disks will be checked on run</span>
-declare -a DISKS
-DISKS<span style="color:#f92672">[</span>0<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/mnt/hdd0&#34;</span>
-DISKS<span style="color:#f92672">[</span>1<span style="color:#f92672">]=</span><span style="color:#e6db74">&#34;/mnt/hdd1&#34;</span>
+<span class="c1"># these disks will be checked on run</span>
+<span class="nb">declare</span> -a DISKS
+DISKS<span class="o">[</span>0<span class="o">]=</span><span class="s2">&#34;/mnt/hdd0&#34;</span>
+DISKS<span class="o">[</span>1<span class="o">]=</span><span class="s2">&#34;/mnt/hdd1&#34;</span>
 
-echo <span style="color:#e6db74">&#34;Time of backup: </span><span style="color:#66d9ef">$(</span>date<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
-notify-send --urgency<span style="color:#f92672">=</span>critical <span style="color:#e6db74">&#34;Starting backup&#34;</span>
+<span class="nb">echo</span> <span class="s2">&#34;Time of backup: </span><span class="k">$(</span>date<span class="k">)</span><span class="s2">&#34;</span>
+notify-send --urgency<span class="o">=</span>critical <span class="s2">&#34;Starting backup&#34;</span>
 
-echo <span style="color:#e6db74">&#34;Checking disks...&#34;</span>
-<span style="color:#66d9ef">for</span> CURR_DISK in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DISKS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>mount | grep $CURR_DISK<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
-        echo <span style="color:#e6db74">&#34;</span>$CURR_DISK<span style="color:#e6db74"> is not mounted, aborting&#34;</span>
-        exit
-    <span style="color:#66d9ef">fi</span>
-<span style="color:#66d9ef">done</span>
+<span class="nb">echo</span> <span class="s2">&#34;Checking disks...&#34;</span>
+<span class="k">for</span> CURR_DISK in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">DISKS</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
+    <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&#34;</span><span class="k">$(</span>mount <span class="p">|</span> grep <span class="nv">$CURR_DISK</span><span class="k">)</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+        <span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$CURR_DISK</span><span class="s2"> is not mounted, aborting&#34;</span>
+        <span class="nb">exit</span>
+    <span class="k">fi</span>
+<span class="k">done</span>
 
-echo <span style="color:#e6db74">&#34;Rotating backups...&#34;</span>
-<span style="color:#66d9ef">for</span> CURR_DEST in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DESTINATIONS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -d $CURR_DEST <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
-        rsync -a --quiet --delete $CURR_DEST/* $CURR_DEST.old &gt; /dev/null &amp;
-    <span style="color:#66d9ef">fi</span>
-<span style="color:#66d9ef">done</span>
-wait
+<span class="nb">echo</span> <span class="s2">&#34;Rotating backups...&#34;</span>
+<span class="k">for</span> CURR_DEST in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">DESTINATIONS</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
+    <span class="k">if</span> <span class="o">[</span> -d <span class="nv">$CURR_DEST</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+        rsync -a --quiet --delete <span class="nv">$CURR_DEST</span>/* <span class="nv">$CURR_DEST</span>.old &gt; /dev/null <span class="p">&amp;</span>
+    <span class="k">fi</span>
+<span class="k">done</span>
+<span class="nb">wait</span>
 
-echo <span style="color:#e6db74">&#34;Synchronizing sources to destinations...&#34;</span>
-<span style="color:#66d9ef">for</span> CURR_SOURCE in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>TARGETS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
-    <span style="color:#66d9ef">for</span> CURR_DEST in <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DESTINATIONS[@]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">do</span>
-        mkdir -p $CURR_DEST/$CURR_SOURCE
-        rsync -a --quiet --delete $CURR_SOURCE $CURR_DEST/<span style="color:#66d9ef">$(</span>dirname $CURR_SOURCE<span style="color:#66d9ef">)</span> &gt; /dev/null &amp;
-    <span style="color:#66d9ef">done</span>
-<span style="color:#66d9ef">done</span>
-wait
+<span class="nb">echo</span> <span class="s2">&#34;Synchronizing sources to destinations...&#34;</span>
+<span class="k">for</span> CURR_SOURCE in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">TARGETS</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
+    <span class="k">for</span> CURR_DEST in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">DESTINATIONS</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
+        mkdir -p <span class="nv">$CURR_DEST</span>/<span class="nv">$CURR_SOURCE</span>
+        rsync -a --quiet --delete <span class="nv">$CURR_SOURCE</span> <span class="nv">$CURR_DEST</span>/<span class="k">$(</span>dirname <span class="nv">$CURR_SOURCE</span><span class="k">)</span> &gt; /dev/null <span class="p">&amp;</span>
+    <span class="k">done</span>
+<span class="k">done</span>
+<span class="nb">wait</span>
 
-echo <span style="color:#e6db74">&#34;Backup complete!&#34;</span>
-notify-send --urgency<span style="color:#f92672">=</span>normal <span style="color:#e6db74">&#34;Backup complete&#34;</span>
+<span class="nb">echo</span> <span class="s2">&#34;Backup complete!&#34;</span>
+notify-send --urgency<span class="o">=</span>normal <span class="s2">&#34;Backup complete&#34;</span>
 </code></pre></div><p>If you look closely, you&rsquo;ll see that the final script makes modifications to most the code we&rsquo;ve
 written so far. Most of it is just small fixes to make everything work together and background processes to
 speed things up. Still, the central idea remains the same: take an array of sources and copy them to
@@ -254,18 +262,18 @@ answer is no, you should probably be backing up to the cloud.</p>
 your Dropbox folder every week or so. Of course, we are going to automate this. Thankfully, this is
 much simpler than our other script. Here is the script I use to take my daily backup, compress it,
 and copy it to my Dropbox.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
-</span><span style="color:#75715e"></span>
-WORKING_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/mnt/hdd0/&#34;</span>
-SOURCE_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;backups/daily&#34;</span>
-DESTINATION_FILE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/mnt/hdd0/Dropbox/backups/backup.tar.gz&#34;</span>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/bash
+</span><span class="cp"></span>
+<span class="nv">WORKING_DIR</span><span class="o">=</span><span class="s2">&#34;/mnt/hdd0/&#34;</span>
+<span class="nv">SOURCE_DIR</span><span class="o">=</span><span class="s2">&#34;backups/daily&#34;</span>
+<span class="nv">DESTINATION_FILE</span><span class="o">=</span><span class="s2">&#34;/mnt/hdd0/Dropbox/backups/backup.tar.gz&#34;</span>
 
-cd $WORKING_DIR
-tar cf - $SOURCE_DIR | pigz &gt; $DESTINATION_FILE
+<span class="nb">cd</span> <span class="nv">$WORKING_DIR</span>
+tar cf - <span class="nv">$SOURCE_DIR</span> <span class="p">|</span> pigz &gt; <span class="nv">$DESTINATION_FILE</span>
 </code></pre></div><p>You can set this up as a asynchronous cron job, just like the local backup. Make a link to that
 script in <code>/etc/cron.weekly</code> and you&rsquo;re good to go.</p>
 <p>If you are not using Dropbox, this is a little trickier to do. However, it is possible. <code>rclone</code> is
-a utility that supports Onedrive, Google Drive, and more. It&rsquo;s syntax is very similar to <code>rsync</code>&rsquo;s.
+a utility that supports Onedrive, Google Drive, and more. It&rsquo;s syntax is very similar to <code>rsync</code>'s.
 I&rsquo;m sure the local backup script provides plenty of inspiration for creating your own script with
 <code>rclone</code>. Good luck!</p>
 <h1 id="conclusion">Conclusion</h1>
@@ -274,15 +282,38 @@ might argue that spending hours writing a script for a problem that has already 
 efficient. Maybe they have a point. But, you wouldn&rsquo;t be reading random programming blogs if that
 approach didn&rsquo;t appeal to you at least a little bit.</p>
 
-</div>
-
-        </div><div id="footer" class="mb-5">
     
-        <hr>
-        <div class="container text-center">
-            <a href="https://www.trmckay.com"><small>copyright 2021 Trevor McKay</small></a>
+    <div class="nav-next-prev">
+        <div class="nav-prev">
+            
+                <a class="grayed-out" href="javascript:void()"><i class="fas fa-chevron-left"></i></a>
+            
         </div>
+        <a class="nav-top" href="#">top</i></a>
+        <div class="nav-next">
+            
+                <a href="https://www.trmckay.com/posts/fib_asm/"><i class="fas fa-chevron-right"></i></a>
+            
+        </div>
+    </div>
     
+
+            </div><footer>
+<div class="footer-content">
+
+  <div class="contact-info">
+      
+          <div class="footer-mail">
+          <i class="far fa-envelope"></i> <a href="mailto:tm@trmckay.com">tm@trmckay.com</a> </div>
+      
+      
+  </div>
+
+
+<p class="copyright meta">Copyright © 2021, Trevor McKay</p>
+
 </div>
-</body>
+</footer></main>
+    </body>
+    <script src=https://www.trmckay.com/js/navbutton.js></script>
 </html>

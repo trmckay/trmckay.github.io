@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>About on Trevor McKay</title>
+    <title>Trevor McKay</title>
     <link>https://www.trmckay.com/</link>
-    <description>Recent content in About on Trevor McKay</description>
+    <description>Recent content on Trevor McKay</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 31 Jan 2021 18:48:09 -0800</lastBuildDate><atom:link href="https://www.trmckay.com/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language>
+    <copyright>Copyright © 2021, Trevor McKay</copyright>
+    <lastBuildDate>Sun, 31 Jan 2021 18:48:09 -0800</lastBuildDate>
+    
+	<atom:link href="https://www.trmckay.com/index.xml" rel="self" type="application/rss+xml" />
+    
+    
     <item>
       <title>Exercises in assembly: recursion</title>
       <link>https://www.trmckay.com/posts/fib_asm/</link>
@@ -18,7 +24,7 @@ Some problems can be solved both iteratively and recursively. Due to the way a c
     </item>
     
     <item>
-      <title>Automated backups with _rsync_, _anacron_, and the cloud</title>
+      <title>Automate backups with rsync</title>
       <link>https://www.trmckay.com/posts/rsync-anacron-backups/</link>
       <pubDate>Fri, 18 Sep 2020 16:22:55 -0700</pubDate>
       
@@ -32,11 +38,22 @@ Some problems can be solved both iteratively and recursively. Due to the way a c
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.trmckay.com/about/</guid>
-      <description>About:  I am a student pursuing a degree in Computer Engineering with a minor in German Language and Culture. I like computer architecture, embedded, RISC-V, Rust, and Linux. When I have time, I like to camp, read, cycle and play volleyball!
-Projects: Serial UART debugger (verilog module and software client) for debugging 32-bit RISC-V soft-cores:
+      <description>About I am a student pursuing a degree in Computer Engineering with a minor in German Language and Culture.
+I like computer architecture, embedded, RISC-V, Rust, and Linux. When I have time, I like to camp, read, cycle and play volleyball!
+Projects Serial UART debugger (verilog module and software client) for debugging 32-bit RISC-V soft-cores:
 trmckay/riscv-uart-debugger
 Kernel convolution, including Sobel edge-detection, for embedded devices with no hardware multiplication:
-trmckay/riscv-kernel-convolution</description>
+trmckay/riscv-kernel-convolution
+Some work for Cal Poly&amp;rsquo;s RISC-V chip, including:</description>
+    </item>
+    
+    <item>
+      <title>get in touch</title>
+      <link>https://www.trmckay.com/contact/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.trmckay.com/contact/</guid>
+      <description></description>
     </item>
     
   </channel>

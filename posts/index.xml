@@ -5,7 +5,13 @@
     <link>https://www.trmckay.com/posts/</link>
     <description>Recent content in Posts on Trevor McKay</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 31 Jan 2021 18:48:09 -0800</lastBuildDate><atom:link href="https://www.trmckay.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language>
+    <copyright>Copyright © 2021, Trevor McKay</copyright>
+    <lastBuildDate>Sun, 31 Jan 2021 18:48:09 -0800</lastBuildDate>
+    
+	<atom:link href="https://www.trmckay.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    
+    
     <item>
       <title>Exercises in assembly: recursion</title>
       <link>https://www.trmckay.com/posts/fib_asm/</link>
@@ -18,7 +24,7 @@ Some problems can be solved both iteratively and recursively. Due to the way a c
     </item>
     
     <item>
-      <title>Automated backups with _rsync_, _anacron_, and the cloud</title>
+      <title>Automate backups with rsync</title>
       <link>https://www.trmckay.com/posts/rsync-anacron-backups/</link>
       <pubDate>Fri, 18 Sep 2020 16:22:55 -0700</pubDate>
       
