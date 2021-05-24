@@ -6,10 +6,6 @@
     <description>Recent content in Tags on Trevor McKay</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>Copyright © 2021, Trevor McKay</copyright>
-    
-	<atom:link href="https://www.trmckay.com/tags/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <copyright>Copyright © 2021, Trevor McKay</copyright><atom:link href="https://www.trmckay.com/tags/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

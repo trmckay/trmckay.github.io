@@ -1,63 +1,186 @@
 <!DOCTYPE html>
-<html><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="your description">
-    <meta name="Author" content="Trevor McKay">
-    <meta name="keywords" content="hugo blog">
-    <link rel="stylesheet" href=https://www.trmckay.com/css/syntax.css>
-    <link rel="stylesheet" href=https://www.trmckay.com/css/style.css>
-    <script src="https://kit.fontawesome.com/1b7478c139.js" crossorigin="anonymous"></script>
-    <title>Trevor McKay</title>
-  </head><body><aside id="sidenav">
-    <header>
-    
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Automate backups with rsync | Trevor McKay</title>
+  <meta name="description" content="Not sure what to put here, do NOT to publish in this state.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Automate backups with rsync" />
+<meta property="og:description" content="Everyone knows how devastating it can be to lose all your personal and configuration files to hardware failure. As such, most users have some way to keep their files safe. Many choose to use some sort of dotfile management system. This is is a great choice as it allows for version control and branches for multiple machines. However, dotfiles are not the only thing you want to preserve. Furthermore, when it comes to backups, more redundancy is never a bad thing." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.trmckay.com/posts/rsync-anacron-backups/" />
+<meta property="article:published_time" content="2020-09-18T16:22:55-07:00" />
+<meta property="article:modified_time" content="2020-09-18T16:22:55-07:00" />
 
-    <a id="branding" href=https://www.trmckay.com>
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Automate backups with rsync"/>
+<meta name="twitter:description" content="Everyone knows how devastating it can be to lose all your personal and configuration files to hardware failure. As such, most users have some way to keep their files safe. Many choose to use some sort of dotfile management system. This is is a great choice as it allows for version control and branches for multiple machines. However, dotfiles are not the only thing you want to preserve. Furthermore, when it comes to backups, more redundancy is never a bad thing."/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://www.trmckay.com/css/style-white.css">
+  
+  
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  
+<link rel="icon" type="image/png" href="https://www.trmckay.com/images/favicon.ico" />
+
+  
+  
+  
+  
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+
+  <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;" aria-label="Top of Page"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+        <li><a href="/">home</a></li>
+         
+        <li><a href="/posts">posts</a></li>
+         
+        <li><a href="/about">about</a></li>
         
-            Trevor McKay
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
         
+        <li>
+          <a class="icon" href=" https://www.trmckay.com/about/" aria-label="Previous">
+            <i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i>
+          </a>
+        </li>
+        
+        
+        <li>
+          <a class="icon" href="https://www.trmckay.com/posts/fib_asm/" aria-label="Next">
+            <i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i>
+          </a>
+        </li>
+        
+        <li>
+          <a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+            <i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i>
+          </a>
+        </li>
+        <li>
+          <a class="icon" href="#" aria-label="Share">
+            <i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i>
+          </a>
+        </li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      
+      <ul>
+  
+  
+    
+  
+  
+  <li>
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f" aria-label="Facebook">
+      <i class="fab fa-facebook " aria-hidden="true"></i>
     </a>
+  </li>
+  <li>
+    <a class="icon" href="https://twitter.com/share?url=https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f&text=Automate%20backups%20with%20rsync" aria-label="Twitter">
+      <i class="fab fa-twitter " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f&title=Automate%20backups%20with%20rsync" aria-label="Linkedin">
+      <i class="fab fa-linkedin " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f&is_video=false&description=Automate%20backups%20with%20rsync" aria-label="Pinterest">
+      <i class="fab fa-pinterest " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="mailto:?subject=Automate%20backups%20with%20rsync&body=Check out this article: https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f" aria-label="Email">
+      <i class="fas fa-envelope " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://getpocket.com/save?url=https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f&title=Automate%20backups%20with%20rsync" aria-label="Pocket">
+      <i class="fab fa-get-pocket " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://reddit.com/submit?url=https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f&title=Automate%20backups%20with%20rsync" aria-label="reddit">
+      <i class="fab fa-reddit " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.tumblr.com/share/link?url=https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f&name=Automate%20backups%20with%20rsync&description=Everyone%20knows%20how%20devastating%20it%20can%20be%20to%20lose%20all%20your%20personal%20and%20configuration%20files%20to%20hardware%20failure.%20As%20such%2c%20most%20users%20have%20some%20way%20to%20keep%20their%20files%20safe.%20Many%20choose%20to%20use%20some%20sort%20of%20dotfile%20management%20system.%20This%20is%20is%20a%20great%20choice%20as%20it%20allows%20for%20version%20control%20and%20branches%20for%20multiple%20machines.%20However%2c%20dotfiles%20are%20not%20the%20only%20thing%20you%20want%20to%20preserve.%20Furthermore%2c%20when%20it%20comes%20to%20backups%2c%20more%20redundancy%20is%20never%20a%20bad%20thing." aria-label="Tumblr">
+      <i class="fab fa-tumblr " aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f&t=Automate%20backups%20with%20rsync" aria-label="Hacker News">
+      <i class="fab fa-hacker-news " aria-hidden="true"></i>
+    </a>
+  </li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <nav id="TableOfContents"></nav>
+    </div>
+  </span>
+</div>
+
+
+  <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+      <h1 class="posttitle" itemprop="name headline">
+        Automate backups with rsync
+      </h1>
+      <div class="meta">
+        
+        <div class="postdate">
+          
+          <time datetime="2020-09-18 16:22:55 -0700 PDT" itemprop="datePublished">2020-09-18</time>
+          
+        </div>
+        
+        
+        
+        
+      </div>
     </header>
 
-    <nav>
-        
-            		
-            <a href="/"
-                
-            >
-                <i class="fas fa-home fa-sm"></i>
-                <span>home</span>
-            </a>
-        
-            		
-            <a href="https://github.com/trmckay"
-                
-                    target="_blank"
-                
-            >
-                <i class="fab fa-github fa-ms"></i>
-                <span>github</span>
-            </a>
-        
-            		
-            <a href="/about"
-                
-            >
-                <i class="far fa-envelope"></i>
-                <span>about</span>
-            </a>
-        
-    </nav>
-</aside>
-<main id="main">
-            <div class="content">
-    
-    <h1 id="title">Automate backups with rsync</h1>
-    
-      
-    <nav id="TableOfContents"></nav>
-    <p>Everyone knows how devastating it can be to lose all your personal
+  
+    <div class="content" itemprop="articleBody">
+      <p>Everyone knows how devastating it can be to lose all your personal
 and configuration files to hardware failure. As such, most users have some way to keep their files
 safe. Many choose to use some sort of dotfile management system. This is is a great choice as it
 allows for version control and branches for multiple machines. However, dotfiles are not the only
@@ -85,13 +208,13 @@ you do not have them already.</p>
 <p>Let&rsquo;s first create a script&ndash;well, for now it&rsquo;s basically just one command&ndash;that can simply
 copy one folder to another. We could use <code>cp</code>, but lets use <code>rsync</code> for <em>speed</em> (among other things).
 Here it is:</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/bash
-</span><span class="cp"></span>
-<span class="nv">SOURCE</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span>
-<span class="nv">DEST</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$2</span><span class="s2">&#34;</span>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#93a1a1;font-style:italic">#!/bin/bash
+</span><span style="color:#93a1a1;font-style:italic"></span>
+<span style="color:#268bd2">SOURCE</span>=<span style="color:#2aa198">&#34;</span><span style="color:#268bd2">$1</span><span style="color:#2aa198">&#34;</span>
+<span style="color:#268bd2">DEST</span>=<span style="color:#2aa198">&#34;</span><span style="color:#268bd2">$2</span><span style="color:#2aa198">&#34;</span>
 
-<span class="nb">echo</span> <span class="s2">&#34;Synchronizing </span><span class="nv">$SOURCE</span><span class="s2"> to </span><span class="nv">$DEST</span><span class="s2">...&#34;</span>
-rsync -a --delete <span class="nv">$SOURCE</span> <span class="nv">$DEST</span>
+<span style="color:#cb4b16">echo</span> <span style="color:#2aa198">&#34;Synchronizing </span><span style="color:#268bd2">$SOURCE</span><span style="color:#2aa198"> to </span><span style="color:#268bd2">$DEST</span><span style="color:#2aa198">...&#34;</span>
+rsync -a --delete <span style="color:#268bd2">$SOURCE</span> <span style="color:#268bd2">$DEST</span>
 </code></pre></div><p>This is arguably the most important command of the backup script we are
 working up to, so let&rsquo;s take a moment to digest it. The <code>-a</code> (<code>--archive</code>) flag is to preserve
 pretty much everything. <code>--delete</code> is whats going
@@ -107,44 +230,44 @@ something to be mindful of as we expand our script.</p>
 <h1 id="backing-up-more-than-one-directory">Backing up more than one directory</h1>
 <p>Wouldn&rsquo;t it be nice if we could back up a bunch of directories at once? I
 agree. We can put our sources and destinations in an array like so:</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># sources for backups</span>
-<span class="nb">declare</span> -a SOURCES
-SOURCES<span class="o">[</span>0<span class="o">]=</span><span class="s2">&#34;/home&#34;</span>
-SOURCES<span class="o">[</span>1<span class="o">]=</span><span class="s2">&#34;/etc&#34;</span>
-SOURCES<span class="o">[</span>2<span class="o">]=</span><span class="s2">&#34;/var/log&#34;</span>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#93a1a1;font-style:italic"># sources for backups</span>
+<span style="color:#cb4b16">declare</span> -a SOURCES
+SOURCES[0]=<span style="color:#2aa198">&#34;/home&#34;</span>
+SOURCES[1]=<span style="color:#2aa198">&#34;/etc&#34;</span>
+SOURCES[2]=<span style="color:#2aa198">&#34;/var/log&#34;</span>
 
-<span class="c1"># destinations for backup</span>
-<span class="nb">declare</span> -a DESTINATIONS
-DESTINATIONS<span class="o">[</span>0<span class="o">]=</span><span class="s2">&#34;/mnt/hdd1/backups/daily&#34;</span>
-DESTINATIONS<span class="o">[</span>1<span class="o">]=</span><span class="s2">&#34;/mnt/hdd0/backups/daily&#34;</span>
+<span style="color:#93a1a1;font-style:italic"># destinations for backup</span>
+<span style="color:#cb4b16">declare</span> -a DESTINATIONS
+DESTINATIONS[0]=<span style="color:#2aa198">&#34;/mnt/hdd1/backups/daily&#34;</span>
+DESTINATIONS[1]=<span style="color:#2aa198">&#34;/mnt/hdd0/backups/daily&#34;</span>
 
-<span class="k">for</span> CURR_SOURCE in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">SOURCES</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
-    <span class="k">for</span> CURR_DEST in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">DESTINATIONS</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
-        rsync -a --quiet --delete <span class="nv">$CURR_SOURCE</span> <span class="nv">$CURR_DEST</span>/<span class="k">$(</span>dirname <span class="nv">$CURR_SOURCE</span><span class="k">)</span>
-    <span class="k">done</span>
-<span class="k">done</span>
+<span style="color:#859900">for</span> CURR_SOURCE in <span style="color:#2aa198">&#34;</span><span style="color:#2aa198">${</span><span style="color:#268bd2">SOURCES</span>[@]<span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>; <span style="color:#859900">do</span>
+    <span style="color:#859900">for</span> CURR_DEST in <span style="color:#2aa198">&#34;</span><span style="color:#2aa198">${</span><span style="color:#268bd2">DESTINATIONS</span>[@]<span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>; <span style="color:#859900">do</span>
+        rsync -a --quiet --delete <span style="color:#268bd2">$CURR_SOURCE</span> <span style="color:#268bd2">$CURR_DEST</span>/<span style="color:#859900">$(</span>dirname <span style="color:#268bd2">$CURR_SOURCE</span><span style="color:#859900">)</span>
+    <span style="color:#859900">done</span>
+<span style="color:#859900">done</span>
 </code></pre></div><p>Now, we have a script that will take each source and back it up to each destination. Ideally, your
 destinations are all on different drives. That&rsquo;s +1 point in the distributed criterion. Furthermore,
 if your destinations are connected via SSH, you can use <code>rsync</code> like this:</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">rsync -a --quiet --delete --rsh<span class="o">=</span>ssh <span class="nv">$CURR_SOURCE</span> <span class="nv">$CURR_DEST</span>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">rsync -a --quiet --delete --rsh=ssh <span style="color:#268bd2">$CURR_SOURCE</span> <span style="color:#268bd2">$CURR_DEST</span>
 </code></pre></div><h1 id="adding-some-nice-features">Adding some nice features</h1>
 <p>This is a good start, but we are still missing some QoL features. Some that came to mind when
 writing this were notifications, backup rotation, and checking that destinations exist.</p>
 <p>Beginning with device checking, I went for the &ldquo;low-tech but definitely works&rdquo; approach. You can
 simply declare an array of all the mount locations the script will be writing to and check them:</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="c1"># these disks will be checked on run</span>
-<span class="nb">declare</span> -a DISKS
-DISKS<span class="o">[</span>0<span class="o">]=</span><span class="s2">&#34;/mnt/hdd0&#34;</span>
-DISKS<span class="o">[</span>1<span class="o">]=</span><span class="s2">&#34;/mnt/hdd1&#34;</span>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#93a1a1;font-style:italic"># these disks will be checked on run</span>
+<span style="color:#cb4b16">declare</span> -a DISKS
+DISKS[0]=<span style="color:#2aa198">&#34;/mnt/hdd0&#34;</span>
+DISKS[1]=<span style="color:#2aa198">&#34;/mnt/hdd1&#34;</span>
 
-<span class="k">for</span> CURR_DISK in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">DISKS</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
-    <span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="k">$(</span>mount <span class="p">|</span> grep <span class="nv">$CURR_DISK</span><span class="k">)</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-        <span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$CURR_DISK</span><span class="s2"> found&#34;</span>
-    <span class="k">else</span>
-        <span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$CURR_DISK</span><span class="s2"> not found, aborting&#34;</span>
-        <span class="nb">exit</span>
-    <span class="k">fi</span>
-<span class="k">done</span>
+<span style="color:#859900">for</span> CURR_DISK in <span style="color:#2aa198">&#34;</span><span style="color:#2aa198">${</span><span style="color:#268bd2">DISKS</span>[@]<span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>; <span style="color:#859900">do</span>
+    <span style="color:#859900">if</span> [ <span style="color:#2aa198">&#34;</span><span style="color:#859900">$(</span>mount | grep <span style="color:#268bd2">$CURR_DISK</span><span style="color:#859900">)</span><span style="color:#2aa198">&#34;</span> ]; <span style="color:#859900">then</span>
+        <span style="color:#cb4b16">echo</span> <span style="color:#2aa198">&#34;</span><span style="color:#268bd2">$CURR_DISK</span><span style="color:#2aa198"> found&#34;</span>
+    <span style="color:#859900">else</span>
+        <span style="color:#cb4b16">echo</span> <span style="color:#2aa198">&#34;</span><span style="color:#268bd2">$CURR_DISK</span><span style="color:#2aa198"> not found, aborting&#34;</span>
+        <span style="color:#cb4b16">exit</span>
+    <span style="color:#859900">fi</span>
+<span style="color:#859900">done</span>
 </code></pre></div><p>As for notifications, <code>notify-send</code> will work just fine as long as you have a notification server
 set up (if you don&rsquo;t know what that is, don&rsquo;t worry, you probably have one). I just have my script
 issue a notification when it runs and when it finishes. It can be useful to keep track of that
@@ -154,77 +277,77 @@ directory, this will certainly affect you. You can use this function to work aro
 (credit goes to
 <a href="https://stackoverflow.com/questions/28195805/running-notify-send-as-root">Fabio A. on StackOverflow</a>
 for that):</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="k">function</span> notify-send<span class="o">()</span> <span class="o">{</span>
-    <span class="nb">local</span> <span class="nv">display</span><span class="o">=</span><span class="s2">&#34;:</span><span class="k">$(</span>ls /tmp/.X11-unix/* <span class="p">|</span> sed <span class="s1">&#39;s#/tmp/.X11-unix/X##&#39;</span> <span class="p">|</span> head -n 1<span class="k">)</span><span class="s2">&#34;</span>
-    <span class="nb">local</span> <span class="nv">user</span><span class="o">=</span><span class="k">$(</span>who <span class="p">|</span> grep <span class="s1">&#39;(&#39;</span><span class="nv">$display</span><span class="s1">&#39;)&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span> <span class="p">|</span> head -n 1<span class="k">)</span>
-    <span class="nb">local</span> <span class="nv">uid</span><span class="o">=</span><span class="k">$(</span>id -u <span class="nv">$user</span><span class="k">)</span>
-    sudo -u <span class="nv">$user</span> <span class="nv">DISPLAY</span><span class="o">=</span><span class="nv">$display</span> <span class="nv">DBUS_SESSION_BUS_ADDRESS</span><span class="o">=</span>unix:path<span class="o">=</span>/run/user/<span class="nv">$uid</span>/bus notify-send <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
-<span class="o">}</span>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#859900">function</span> notify-send() {
+    <span style="color:#cb4b16">local</span> <span style="color:#268bd2">display</span>=<span style="color:#2aa198">&#34;:</span><span style="color:#859900">$(</span>ls /tmp/.X11-unix/* | sed <span style="color:#2aa198">&#39;s#/tmp/.X11-unix/X##&#39;</span> | head -n 1<span style="color:#859900">)</span><span style="color:#2aa198">&#34;</span>
+    <span style="color:#cb4b16">local</span> <span style="color:#268bd2">user</span>=<span style="color:#859900">$(</span>who | grep <span style="color:#2aa198">&#39;(&#39;</span><span style="color:#268bd2">$display</span><span style="color:#2aa198">&#39;)&#39;</span> | awk <span style="color:#2aa198">&#39;{print $1}&#39;</span> | head -n 1<span style="color:#859900">)</span>
+    <span style="color:#cb4b16">local</span> <span style="color:#268bd2">uid</span>=<span style="color:#859900">$(</span>id -u <span style="color:#268bd2">$user</span><span style="color:#859900">)</span>
+    sudo -u <span style="color:#268bd2">$user</span> <span style="color:#268bd2">DISPLAY</span>=<span style="color:#268bd2">$display</span> <span style="color:#268bd2">DBUS_SESSION_BUS_ADDRESS</span>=unix:path=/run/user/<span style="color:#268bd2">$uid</span>/bus notify-send <span style="color:#2aa198">&#34;</span><span style="color:#268bd2">$@</span><span style="color:#2aa198">&#34;</span>
+}
 </code></pre></div><p>One last feature to add is backup rotation. Like I said earlier, redundancy is never bad. So it
 can&rsquo;t hurt to keep more if you can spare the disk space. In my case, I opted for one level of
 redundancy, but the logic is simple to adapt to more than one level. Essentially, before backing up
 the source directory to the target, the target is copied to a <code>.old</code> directory.</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="k">for</span> CURR_DEST in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">DESTINATIONS</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
-    rsync -a --quiet --delete <span class="nv">$CURR_DEST</span>/* <span class="nv">$CURR_DEST</span>.old
-<span class="k">done</span>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#859900">for</span> CURR_DEST in <span style="color:#2aa198">&#34;</span><span style="color:#2aa198">${</span><span style="color:#268bd2">DESTINATIONS</span>[@]<span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>; <span style="color:#859900">do</span>
+    rsync -a --quiet --delete <span style="color:#268bd2">$CURR_DEST</span>/* <span style="color:#268bd2">$CURR_DEST</span>.old
+<span style="color:#859900">done</span>
 </code></pre></div><h1 id="bringing-it-all-together">Bringing it all together</h1>
 <p>Let&rsquo;s take these concepts and make them into a single useful script.</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/bash
-</span><span class="cp"></span>
-<span class="k">function</span> notify-send<span class="o">()</span> <span class="o">{</span>
-    <span class="nb">local</span> <span class="nv">display</span><span class="o">=</span><span class="s2">&#34;:</span><span class="k">$(</span>ls /tmp/.X11-unix/* <span class="p">|</span> sed <span class="s1">&#39;s#/tmp/.X11-unix/X##&#39;</span> <span class="p">|</span> head -n 1<span class="k">)</span><span class="s2">&#34;</span>
-    <span class="nb">local</span> <span class="nv">user</span><span class="o">=</span><span class="k">$(</span>who <span class="p">|</span> grep <span class="s1">&#39;(&#39;</span><span class="nv">$display</span><span class="s1">&#39;)&#39;</span> <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span> <span class="p">|</span> head -n 1<span class="k">)</span>
-    <span class="nb">local</span> <span class="nv">uid</span><span class="o">=</span><span class="k">$(</span>id -u <span class="nv">$user</span><span class="k">)</span>
-    sudo -u <span class="nv">$user</span> <span class="nv">DISPLAY</span><span class="o">=</span><span class="nv">$display</span> <span class="nv">DBUS_SESSION_BUS_ADDRESS</span><span class="o">=</span>unix:path<span class="o">=</span>/run/user/<span class="nv">$uid</span>/bus notify-send <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
-<span class="o">}</span>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#93a1a1;font-style:italic">#!/bin/bash
+</span><span style="color:#93a1a1;font-style:italic"></span>
+<span style="color:#859900">function</span> notify-send() {
+    <span style="color:#cb4b16">local</span> <span style="color:#268bd2">display</span>=<span style="color:#2aa198">&#34;:</span><span style="color:#859900">$(</span>ls /tmp/.X11-unix/* | sed <span style="color:#2aa198">&#39;s#/tmp/.X11-unix/X##&#39;</span> | head -n 1<span style="color:#859900">)</span><span style="color:#2aa198">&#34;</span>
+    <span style="color:#cb4b16">local</span> <span style="color:#268bd2">user</span>=<span style="color:#859900">$(</span>who | grep <span style="color:#2aa198">&#39;(&#39;</span><span style="color:#268bd2">$display</span><span style="color:#2aa198">&#39;)&#39;</span> | awk <span style="color:#2aa198">&#39;{print $1}&#39;</span> | head -n 1<span style="color:#859900">)</span>
+    <span style="color:#cb4b16">local</span> <span style="color:#268bd2">uid</span>=<span style="color:#859900">$(</span>id -u <span style="color:#268bd2">$user</span><span style="color:#859900">)</span>
+    sudo -u <span style="color:#268bd2">$user</span> <span style="color:#268bd2">DISPLAY</span>=<span style="color:#268bd2">$display</span> <span style="color:#268bd2">DBUS_SESSION_BUS_ADDRESS</span>=unix:path=/run/user/<span style="color:#268bd2">$uid</span>/bus notify-send <span style="color:#2aa198">&#34;</span><span style="color:#268bd2">$@</span><span style="color:#2aa198">&#34;</span>
+}
 
-<span class="c1"># sources for backups</span>
-<span class="nb">declare</span> -a TARGETS
-TARGETS<span class="o">[</span>0<span class="o">]=</span><span class="s2">&#34;/home&#34;</span>
-TARGETS<span class="o">[</span>1<span class="o">]=</span><span class="s2">&#34;/etc&#34;</span>
-TARGETS<span class="o">[</span>2<span class="o">]=</span><span class="s2">&#34;/var/log&#34;</span>
+<span style="color:#93a1a1;font-style:italic"># sources for backups</span>
+<span style="color:#cb4b16">declare</span> -a TARGETS
+TARGETS[0]=<span style="color:#2aa198">&#34;/home&#34;</span>
+TARGETS[1]=<span style="color:#2aa198">&#34;/etc&#34;</span>
+TARGETS[2]=<span style="color:#2aa198">&#34;/var/log&#34;</span>
 
-<span class="c1"># destinations for backup</span>
-<span class="c1"># folders will contain ALL targets after backup</span>
-<span class="nb">declare</span> -a DESTINATIONS
-DESTINATIONS<span class="o">[</span>0<span class="o">]=</span><span class="s2">&#34;/mnt/hdd1/backups/daily&#34;</span>
-DESTINATIONS<span class="o">[</span>1<span class="o">]=</span><span class="s2">&#34;/mnt/hdd0/backups/daily&#34;</span>
+<span style="color:#93a1a1;font-style:italic"># destinations for backup</span>
+<span style="color:#93a1a1;font-style:italic"># folders will contain ALL targets after backup</span>
+<span style="color:#cb4b16">declare</span> -a DESTINATIONS
+DESTINATIONS[0]=<span style="color:#2aa198">&#34;/mnt/hdd1/backups/daily&#34;</span>
+DESTINATIONS[1]=<span style="color:#2aa198">&#34;/mnt/hdd0/backups/daily&#34;</span>
 
-<span class="c1"># these disks will be checked on run</span>
-<span class="nb">declare</span> -a DISKS
-DISKS<span class="o">[</span>0<span class="o">]=</span><span class="s2">&#34;/mnt/hdd0&#34;</span>
-DISKS<span class="o">[</span>1<span class="o">]=</span><span class="s2">&#34;/mnt/hdd1&#34;</span>
+<span style="color:#93a1a1;font-style:italic"># these disks will be checked on run</span>
+<span style="color:#cb4b16">declare</span> -a DISKS
+DISKS[0]=<span style="color:#2aa198">&#34;/mnt/hdd0&#34;</span>
+DISKS[1]=<span style="color:#2aa198">&#34;/mnt/hdd1&#34;</span>
 
-<span class="nb">echo</span> <span class="s2">&#34;Time of backup: </span><span class="k">$(</span>date<span class="k">)</span><span class="s2">&#34;</span>
-notify-send --urgency<span class="o">=</span>critical <span class="s2">&#34;Starting backup&#34;</span>
+<span style="color:#cb4b16">echo</span> <span style="color:#2aa198">&#34;Time of backup: </span><span style="color:#859900">$(</span>date<span style="color:#859900">)</span><span style="color:#2aa198">&#34;</span>
+notify-send --urgency=critical <span style="color:#2aa198">&#34;Starting backup&#34;</span>
 
-<span class="nb">echo</span> <span class="s2">&#34;Checking disks...&#34;</span>
-<span class="k">for</span> CURR_DISK in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">DISKS</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
-    <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&#34;</span><span class="k">$(</span>mount <span class="p">|</span> grep <span class="nv">$CURR_DISK</span><span class="k">)</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-        <span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$CURR_DISK</span><span class="s2"> is not mounted, aborting&#34;</span>
-        <span class="nb">exit</span>
-    <span class="k">fi</span>
-<span class="k">done</span>
+<span style="color:#cb4b16">echo</span> <span style="color:#2aa198">&#34;Checking disks...&#34;</span>
+<span style="color:#859900">for</span> CURR_DISK in <span style="color:#2aa198">&#34;</span><span style="color:#2aa198">${</span><span style="color:#268bd2">DISKS</span>[@]<span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>; <span style="color:#859900">do</span>
+    <span style="color:#859900">if</span> [ -z <span style="color:#2aa198">&#34;</span><span style="color:#859900">$(</span>mount | grep <span style="color:#268bd2">$CURR_DISK</span><span style="color:#859900">)</span><span style="color:#2aa198">&#34;</span> ]; <span style="color:#859900">then</span>
+        <span style="color:#cb4b16">echo</span> <span style="color:#2aa198">&#34;</span><span style="color:#268bd2">$CURR_DISK</span><span style="color:#2aa198"> is not mounted, aborting&#34;</span>
+        <span style="color:#cb4b16">exit</span>
+    <span style="color:#859900">fi</span>
+<span style="color:#859900">done</span>
 
-<span class="nb">echo</span> <span class="s2">&#34;Rotating backups...&#34;</span>
-<span class="k">for</span> CURR_DEST in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">DESTINATIONS</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
-    <span class="k">if</span> <span class="o">[</span> -d <span class="nv">$CURR_DEST</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-        rsync -a --quiet --delete <span class="nv">$CURR_DEST</span>/* <span class="nv">$CURR_DEST</span>.old &gt; /dev/null <span class="p">&amp;</span>
-    <span class="k">fi</span>
-<span class="k">done</span>
-<span class="nb">wait</span>
+<span style="color:#cb4b16">echo</span> <span style="color:#2aa198">&#34;Rotating backups...&#34;</span>
+<span style="color:#859900">for</span> CURR_DEST in <span style="color:#2aa198">&#34;</span><span style="color:#2aa198">${</span><span style="color:#268bd2">DESTINATIONS</span>[@]<span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>; <span style="color:#859900">do</span>
+    <span style="color:#859900">if</span> [ -d <span style="color:#268bd2">$CURR_DEST</span> ]; <span style="color:#859900">then</span>
+        rsync -a --quiet --delete <span style="color:#268bd2">$CURR_DEST</span>/* <span style="color:#268bd2">$CURR_DEST</span>.old &gt; /dev/null &amp;
+    <span style="color:#859900">fi</span>
+<span style="color:#859900">done</span>
+<span style="color:#cb4b16">wait</span>
 
-<span class="nb">echo</span> <span class="s2">&#34;Synchronizing sources to destinations...&#34;</span>
-<span class="k">for</span> CURR_SOURCE in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">TARGETS</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
-    <span class="k">for</span> CURR_DEST in <span class="s2">&#34;</span><span class="si">${</span><span class="nv">DESTINATIONS</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">;</span> <span class="k">do</span>
-        mkdir -p <span class="nv">$CURR_DEST</span>/<span class="nv">$CURR_SOURCE</span>
-        rsync -a --quiet --delete <span class="nv">$CURR_SOURCE</span> <span class="nv">$CURR_DEST</span>/<span class="k">$(</span>dirname <span class="nv">$CURR_SOURCE</span><span class="k">)</span> &gt; /dev/null <span class="p">&amp;</span>
-    <span class="k">done</span>
-<span class="k">done</span>
-<span class="nb">wait</span>
+<span style="color:#cb4b16">echo</span> <span style="color:#2aa198">&#34;Synchronizing sources to destinations...&#34;</span>
+<span style="color:#859900">for</span> CURR_SOURCE in <span style="color:#2aa198">&#34;</span><span style="color:#2aa198">${</span><span style="color:#268bd2">TARGETS</span>[@]<span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>; <span style="color:#859900">do</span>
+    <span style="color:#859900">for</span> CURR_DEST in <span style="color:#2aa198">&#34;</span><span style="color:#2aa198">${</span><span style="color:#268bd2">DESTINATIONS</span>[@]<span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>; <span style="color:#859900">do</span>
+        mkdir -p <span style="color:#268bd2">$CURR_DEST</span>/<span style="color:#268bd2">$CURR_SOURCE</span>
+        rsync -a --quiet --delete <span style="color:#268bd2">$CURR_SOURCE</span> <span style="color:#268bd2">$CURR_DEST</span>/<span style="color:#859900">$(</span>dirname <span style="color:#268bd2">$CURR_SOURCE</span><span style="color:#859900">)</span> &gt; /dev/null &amp;
+    <span style="color:#859900">done</span>
+<span style="color:#859900">done</span>
+<span style="color:#cb4b16">wait</span>
 
-<span class="nb">echo</span> <span class="s2">&#34;Backup complete!&#34;</span>
-notify-send --urgency<span class="o">=</span>normal <span class="s2">&#34;Backup complete&#34;</span>
+<span style="color:#cb4b16">echo</span> <span style="color:#2aa198">&#34;Backup complete!&#34;</span>
+notify-send --urgency=normal <span style="color:#2aa198">&#34;Backup complete&#34;</span>
 </code></pre></div><p>If you look closely, you&rsquo;ll see that the final script makes modifications to most the code we&rsquo;ve
 written so far. Most of it is just small fixes to make everything work together and background processes to
 speed things up. Still, the central idea remains the same: take an array of sources and copy them to
@@ -262,18 +385,18 @@ answer is no, you should probably be backing up to the cloud.</p>
 your Dropbox folder every week or so. Of course, we are going to automate this. Thankfully, this is
 much simpler than our other script. Here is the script I use to take my daily backup, compress it,
 and copy it to my Dropbox.</p>
-<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/bash
-</span><span class="cp"></span>
-<span class="nv">WORKING_DIR</span><span class="o">=</span><span class="s2">&#34;/mnt/hdd0/&#34;</span>
-<span class="nv">SOURCE_DIR</span><span class="o">=</span><span class="s2">&#34;backups/daily&#34;</span>
-<span class="nv">DESTINATION_FILE</span><span class="o">=</span><span class="s2">&#34;/mnt/hdd0/Dropbox/backups/backup.tar.gz&#34;</span>
+<div class="highlight"><pre style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#93a1a1;font-style:italic">#!/bin/bash
+</span><span style="color:#93a1a1;font-style:italic"></span>
+<span style="color:#268bd2">WORKING_DIR</span>=<span style="color:#2aa198">&#34;/mnt/hdd0/&#34;</span>
+<span style="color:#268bd2">SOURCE_DIR</span>=<span style="color:#2aa198">&#34;backups/daily&#34;</span>
+<span style="color:#268bd2">DESTINATION_FILE</span>=<span style="color:#2aa198">&#34;/mnt/hdd0/Dropbox/backups/backup.tar.gz&#34;</span>
 
-<span class="nb">cd</span> <span class="nv">$WORKING_DIR</span>
-tar cf - <span class="nv">$SOURCE_DIR</span> <span class="p">|</span> pigz &gt; <span class="nv">$DESTINATION_FILE</span>
+<span style="color:#cb4b16">cd</span> <span style="color:#268bd2">$WORKING_DIR</span>
+tar cf - <span style="color:#268bd2">$SOURCE_DIR</span> | pigz &gt; <span style="color:#268bd2">$DESTINATION_FILE</span>
 </code></pre></div><p>You can set this up as a asynchronous cron job, just like the local backup. Make a link to that
 script in <code>/etc/cron.weekly</code> and you&rsquo;re good to go.</p>
 <p>If you are not using Dropbox, this is a little trickier to do. However, it is possible. <code>rclone</code> is
-a utility that supports Onedrive, Google Drive, and more. It&rsquo;s syntax is very similar to <code>rsync</code>'s.
+a utility that supports Onedrive, Google Drive, and more. It&rsquo;s syntax is very similar to <code>rsync</code>&rsquo;s.
 I&rsquo;m sure the local backup script provides plenty of inspiration for creating your own script with
 <code>rclone</code>. Good luck!</p>
 <h1 id="conclusion">Conclusion</h1>
@@ -282,38 +405,151 @@ might argue that spending hours writing a script for a problem that has already 
 efficient. Maybe they have a point. But, you wouldn&rsquo;t be reading random programming blogs if that
 approach didn&rsquo;t appeal to you at least a little bit.</p>
 
-    
-    <div class="nav-next-prev">
-        <div class="nav-prev">
-            
-                <a class="grayed-out" href="javascript:void()"><i class="fas fa-chevron-left"></i></a>
-            
-        </div>
-        <a class="nav-top" href="#">top</i></a>
-        <div class="nav-next">
-            
-                <a href="https://www.trmckay.com/posts/fib_asm/"><i class="fas fa-chevron-right"></i></a>
-            
-        </div>
     </div>
+  </article>
+
+  
+  
+
+
+
+
+
+  <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">home</a></li>
+         
+          <li><a href="/posts">posts</a></li>
+         
+          <li><a href="/about">about</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <nav id="TableOfContents"></nav>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      
+      <ul>
+  
+  
     
+  
+  
+  <li>
+    <a class="icon" href="http://www.facebook.com/sharer.php?u=https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f" aria-label="Facebook">
+      <i class="fab fa-facebook fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://twitter.com/share?url=https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f&text=Automate%20backups%20with%20rsync" aria-label="Twitter">
+      <i class="fab fa-twitter fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.linkedin.com/shareArticle?url=https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f&title=Automate%20backups%20with%20rsync" aria-label="Linkedin">
+      <i class="fab fa-linkedin fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f&is_video=false&description=Automate%20backups%20with%20rsync" aria-label="Pinterest">
+      <i class="fab fa-pinterest fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="mailto:?subject=Automate%20backups%20with%20rsync&body=Check out this article: https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f" aria-label="Email">
+      <i class="fas fa-envelope fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://getpocket.com/save?url=https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f&title=Automate%20backups%20with%20rsync" aria-label="Pocket">
+      <i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://reddit.com/submit?url=https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f&title=Automate%20backups%20with%20rsync" aria-label="reddit">
+      <i class="fab fa-reddit fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="http://www.tumblr.com/share/link?url=https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f&name=Automate%20backups%20with%20rsync&description=Everyone%20knows%20how%20devastating%20it%20can%20be%20to%20lose%20all%20your%20personal%20and%20configuration%20files%20to%20hardware%20failure.%20As%20such%2c%20most%20users%20have%20some%20way%20to%20keep%20their%20files%20safe.%20Many%20choose%20to%20use%20some%20sort%20of%20dotfile%20management%20system.%20This%20is%20is%20a%20great%20choice%20as%20it%20allows%20for%20version%20control%20and%20branches%20for%20multiple%20machines.%20However%2c%20dotfiles%20are%20not%20the%20only%20thing%20you%20want%20to%20preserve.%20Furthermore%2c%20when%20it%20comes%20to%20backups%2c%20more%20redundancy%20is%20never%20a%20bad%20thing." aria-label="Tumblr">
+      <i class="fab fa-tumblr fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+  <li>
+    <a class="icon" href="https://news.ycombinator.com/submitlink?u=https%3a%2f%2fwww.trmckay.com%2fposts%2frsync-anacron-backups%2f&t=Automate%20backups%20with%20rsync" aria-label="Hacker News">
+      <i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i>
+    </a>
+  </li>
+</ul>
 
-            </div><footer>
-<div class="footer-content">
+    </div>
 
-  <div class="contact-info">
+    <div id="actions-footer">
       
-          <div class="footer-mail">
-          <i class="far fa-envelope"></i> <a href="mailto:tm@trmckay.com">tm@trmckay.com</a> </div>
-      
-      
+        <a id="menu-toggle" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;" aria-label="Menu">
+          <i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc-toggle" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;" aria-label="TOC">
+          <i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share-toggle" class="icon" href="#" onclick="$('#share-footer').toggle();return false;" aria-label="Share">
+          <i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" aria-label="Top of Page">
+          <i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
   </div>
-
-
-<p class="copyright meta">Copyright © 2021, Trevor McKay</p>
-
 </div>
-</footer></main>
-    </body>
-    <script src=https://www.trmckay.com/js/navbutton.js></script>
+
+
+  <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2021  Copyright © 2021, Trevor McKay 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">home</a></li>
+         
+        <li><a href="/posts">posts</a></li>
+         
+        <li><a href="/about">about</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+  </div>
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+
+
+  
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']]
+    },
+    svg: {
+      fontCache: 'global'
+    }
+  };
+</script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
 </html>
