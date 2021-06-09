@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Trevor McKay</copyright>
-    <lastBuildDate>Sun, 31 Jan 2021 18:48:09 -0800</lastBuildDate><atom:link href="https://www.trmckay.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 08 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://www.trmckay.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Experimenting with baremetal Rust on RISC-V</title>
+      <link>https://www.trmckay.com/posts/riscv-baremetal/</link>
+      <pubDate>Tue, 08 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.trmckay.com/posts/riscv-baremetal/</guid>
+      <description>I have been experimenting with Rust lately and it has been really fun. One of my recent challenges to myself was to see if I could get baremetal Rust running on my pretty barebones RISC-V chip. It&amp;rsquo;s rv32i with a very limited amount of space and sort-of weird memory map. This sort of thing is trivial to deal with when writing assembly, and still not too bad when writing C. However, step further away from the metal, and your very precise target becomes harder and harder to hit.</description>
+    </item>
+    
     <item>
       <title>Exercises in assembly: recursion</title>
       <link>https://www.trmckay.com/posts/fib_asm/</link>
